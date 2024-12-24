@@ -19,3 +19,18 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+.arrow {
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.right {
+  transform: rotate(-45deg);
+}
+
+.left {
+  transform: rotate(135deg);
+}
