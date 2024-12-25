@@ -1,11 +1,9 @@
 // page.tsx
 "use client"
 import { useEffect, useState } from "react";
-import Header from "./header";
-import Footer from "./footer";
 import MovieLabel from "./movieLabel";
 import Carousel from "./carousel";
-import { Movie } from "./types";
+import { Movie,MovieApiResponse } from "./types";
 
 export default function Home() {
     const [moviesResults, setMoviesResults] = useState<Movie[]>([]);
@@ -52,11 +50,11 @@ export default function Home() {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Header />
+
             <main className="flex-grow">
                 {moviesResults.length > 0 ? (
                     <>
-                        <Carousel movies={moviesResults} />
+                        <Carousel movies={moviesResults.slice(0,5)} />
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                             {moviesResults.map((movie) => (
                                 <MovieLabel
@@ -71,7 +69,6 @@ export default function Home() {
                     <p className="text-center py-4">No movies found</p>
                 )}
             </main>
-            <Footer />
         </div>
     );
 }
