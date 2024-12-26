@@ -3,6 +3,7 @@ import {useState} from "react";
 import {Movie} from "./types";
 import {LuCircle, LuCircleDot} from "react-icons/lu";
 import Image from 'next/image';
+import ArrowButton from "@/app/arrowButton";
 
 interface CarouselProps {
     movies: Movie[];
@@ -32,7 +33,7 @@ export default function Carousel({movies}: CarouselProps) {
             setMovieIndexNumber(movies.length - 1)
         )
     }
-
+    //on hover slide up title with oppacity grey background
     return (
         <div className="relative w-full">
             <div className="relative mx-auto w-2/3">
@@ -49,7 +50,7 @@ export default function Carousel({movies}: CarouselProps) {
                                 alt="Movie Poster"
                                 width={1920}
                                 height={1080}
-                                priority={movieIndexNumber === movies.indexOf(movie)} // Opcjonalnie: ładowanie priorytetowe
+                                priority={movieIndexNumber === movies.indexOf(movie)}
                             />
                         ))}
 
@@ -57,13 +58,7 @@ export default function Carousel({movies}: CarouselProps) {
                 </div>
 
                 <p className="absolute font-sans hover:bg-opacity-80 hover:scale-110 transition-transform rounded-md duration-700  bottom-0 bg-gray-800 bg-opacity-70 text-3xl left-1/2 border-2 p-2 px-8 text-white shadow-text-border -translate-x-1/2 -translate-y-10">{movies[movieIndexNumber].title}</p>
-                <button
-                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-8 h-8 flex items-center justify-center"
-                    aria-label="Previous slide"
-                    onClick={() => showPrevImage()}
-                >
-                    <div className="arrow left border-white hover:border-gray-300 transition-colors"></div>
-                </button>
+                <ArrowButton onClick={showPrevImage} direction={"left"}/>
 
                 <div className="absolute right-1/2 translate-x-1/2 -translate-y-6">
 
@@ -76,15 +71,7 @@ export default function Carousel({movies}: CarouselProps) {
                         </button>
                     ))}
                 </div>
-
-
-                <button
-                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-8 h-8 flex items-center justify-center"
-                    aria-label="Next slide"
-                    onClick={() => showNextImage()}
-                >
-                    <div className="arrow right border-white hover:border-gray-300 transition-colors"></div>
-                </button>
+                <ArrowButton onClick={showNextImage} direction={"right"}/>
             </div>
         </div>
     );
