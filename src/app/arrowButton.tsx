@@ -1,17 +1,15 @@
 export default function ArrowButton({
                                         onClick,
+                                        className,
                                         direction,
                                     }: {
     onClick?: () => void;
+    className?: string;
     direction?: 'left' | 'right';
 }) {
     return (
         <button
-            className={`absolute ${
-                direction === 'left'
-                    ? 'left-0 -translate-x-12'
-                    : 'right-0 translate-x-12'
-            } top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center`}
+            className={className}
             aria-label={direction === 'left' ? 'Previous slide' : 'Next slide'}
             onClick={onClick}
         >

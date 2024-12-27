@@ -3,7 +3,7 @@ import { MovieApiResponse } from '@/types';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-    const url = "https://api.themoviedb.org/3/discover/movie";
+    const url = "https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1";
     const params = new URLSearchParams({
         include_adult: 'false',
         include_video: 'false',

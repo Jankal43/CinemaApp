@@ -33,7 +33,7 @@ export default function Carousel({movies}: CarouselProps) {
             setMovieIndexNumber(movies.length - 1)
         )
     }
-    //on hover slide up title with oppacity grey background
+
     return (
         <div className="relative w-full">
             <div className="relative mx-auto w-2/3">
@@ -56,12 +56,13 @@ export default function Carousel({movies}: CarouselProps) {
 
                     </div>
                 </div>
-
-                <p className="absolute font-sans hover:bg-opacity-80 hover:scale-110 transition-transform rounded-md duration-700  bottom-0 bg-gray-800 bg-opacity-70 text-3xl left-1/2 border-2 p-2 px-8 text-white shadow-text-border -translate-x-1/2 -translate-y-10">{movies[movieIndexNumber].title}</p>
-                <ArrowButton onClick={showPrevImage} direction={"left"}/>
+                {/*scroll do gory on hover gdy bede mial czas*/}
+                <div
+                    className="relative border-t-2  h-12">
+                    <p className="absolute font-sans font-semibold pt-6 w-full bottom-0 text-3xl translate-y-2 left-0 p-2 px-8 text-white shadow-text-border">{movies[movieIndexNumber].title}</p>
+                </div>
 
                 <div className="absolute right-1/2 translate-x-1/2 -translate-y-6">
-
                     {movies.map((movie: Movie) => (
                         <button className="transition duration-500 hover:scale-125 m-1"
                                 key={movie.id}
@@ -71,7 +72,17 @@ export default function Carousel({movies}: CarouselProps) {
                         </button>
                     ))}
                 </div>
-                <ArrowButton onClick={showNextImage} direction={"right"}/>
+                <ArrowButton
+                    onClick={showPrevImage}
+                    direction="left"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-8 h-8 flex items-center justify-center"
+                />
+                <ArrowButton
+                    onClick={showNextImage}
+                    direction="right"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-8 h-8 flex items-center justify-center"
+                />
+
             </div>
         </div>
     );

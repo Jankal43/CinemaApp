@@ -19,6 +19,7 @@ export default function Home() {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const data = await response.json();
+                console.log(data)
                 const posterPath = "https://image.tmdb.org/t/p/original/";
 
                 const movies = data.results.map((movie: MovieApiResponse['results'][0]) => ({
@@ -54,8 +55,11 @@ export default function Home() {
             <main className="flex-grow">
                 {moviesResults.length > 0 ? (
                     <>
-                        <Carousel movies={moviesResults.slice(0,5)} />
-                        <MovieSlider movies={moviesResults} />
+                        <Carousel movies={moviesResults.slice(0, 5)}/>
+                        <h1 className="text-2xl font-semibold m-12 ml-52 mb-4">AIRING</h1>
+                        <MovieSlider movies={moviesResults}/>
+                        <h1 className="text-2xl font-semibold m-12 ml-52 mb-4">UPCOMING</h1>
+                        <MovieSlider movies={moviesResults}/>
                     </>
                 ) : (
                     <p className="text-center py-4">No movies found</p>
