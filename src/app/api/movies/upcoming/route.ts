@@ -1,22 +1,9 @@
-// app/api/movies/route.ts
-import {MovieApiResponse} from '../../types';
-import {NextResponse} from 'next/server';
 
+import { MovieApiResponse } from '@/app/types';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
-
-    const {searchParams} = new URL(request.url);
-    const category = searchParams.get('category');
-
-
-    const endpoints: { [key: string]: string } = {
-        upcoming: 'https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1',
-        trending: 'https://api.themoviedb.org/3/trending/movie/day?language=en-US',
-        airing: 'https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1'
-    };
-
-    const url = endpoints[category as keyof typeof endpoints] || endpoints.upcoming;
-    console.log(url);
+export async function GET() {
+    const url = "https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1";
     const params = new URLSearchParams({
         include_adult: 'false',
         include_video: 'false',
@@ -24,7 +11,6 @@ export async function GET(request: Request) {
         page: '1',
         sort_by: 'popularity.desc'
     });
-
 
     try {
         const response = await fetch(`${url}?${params}`, {
@@ -43,8 +29,8 @@ export async function GET(request: Request) {
     } catch (error) {
         console.error('Error fetching movies:', error);
         return NextResponse.json(
-            {error: 'Failed to fetch movies'},
-            {status: 500}
+            { error: 'Failed to fetch movies' },
+            { status: 500 }
         );
     }
 }

@@ -33,3 +33,52 @@
 //         </div>
 //     );
 // }
+
+//2
+//
+// import {useEffect} from "react";
+// useEffect(() => {
+//     const fetchMovies = async () => {
+//         try {
+//             setIsLoading(true);
+//             const responses = await Promise.all([
+//                 fetch("/api/movies?category=upcoming"),
+//                 fetch("/api/movies?category=airing"),
+//                 fetch("/api/movies?category=trending")
+//             ]);
+//             responses.forEach(response => {
+//                 if (!response.ok) {
+//                     throw new Error(`HTTP error! status: ${response.status}`);
+//                 }
+//             });
+//             const data = await Promise.all(responses.map(r => r.json()));
+//
+//             const posterPath = "https://image.tmdb.org/t/p/original/";
+//
+//             const categories = ['upcoming', 'airing', 'trending'];
+//             const processedData = categories.reduce((acc, category, index) => {
+//                 const movies = data[index].results.map((movie: MovieApiResponse['results'][0]) => ({
+//                     id: movie.id,
+//                     title: movie.title,
+//                     poster: `${posterPath}${movie.poster_path}`,
+//                     backDropPoster: `${posterPath}${movie.backdrop_path}`
+//                 }));
+//                 return {
+//                     ...acc,
+//                     [category]: movies
+//                 };
+//             }, {} as MoviesByCategory);
+//
+//             setMoviesByCategory(processedData);
+//         } catch (err) {
+//             setError(err instanceof Error ? err.message : 'An error occurred');
+//             console.error("Error fetching movies:", err);
+//         } finally {
+//             setIsLoading(false);
+//         }
+//     };
+//
+//     fetchMovies();
+// }, []);
+
+import {MovieApiResponse} from "@/app/types";

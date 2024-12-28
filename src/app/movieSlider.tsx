@@ -1,13 +1,14 @@
-import {Movie} from "@/app/types";
+import {MovieApiResponse} from "@/app/types";
 import MovieLabel from "@/app/movieLabel";
 import ArrowButton from "@/app/arrowButton";
 import {useState} from "react";
 
-interface SliderProps {
-    movies: Movie[];
+interface MovieSliderProps {
+    movies: MovieApiResponse[];
 }
 
-export default function MovieSlider({movies}: SliderProps) {
+
+export default function MovieSlider({movies}: MovieSliderProps) {
     const [movieIndexNumber, setMovieIndexNumber] = useState(1)
 
 
@@ -36,13 +37,12 @@ export default function MovieSlider({movies}: SliderProps) {
         <div className="relative w-full">
             <div className="relative mx-auto w-full overflow-hidden">
 
-                <div className="flex flex-row justify-start items-center gap-4 p-4"
-                >
-                    {movies.map((movie, index: number) => (
+                <div className="flex flex-row justify-start items-center gap-4 p-4">
+                    {movies.map((movie: MovieApiResponse, index: number) => (
                         <MovieLabel
-                            key={index}
+                            key={`${movie.id}-${index}`}
                             movieTitle={movie.title}
-                            moviePoster={movie.poster}
+                            moviePoster={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
                             className=""
                         />
                     ))}

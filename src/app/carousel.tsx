@@ -1,15 +1,16 @@
 "use client"
 import {useState} from "react";
-import {Movie} from "./types";
+import {MovieApiResponse} from "./types";
 import {LuCircle, LuCircleDot} from "react-icons/lu";
 import Image from 'next/image';
 import ArrowButton from "@/app/arrowButton";
 
 interface CarouselProps {
-    movies: Movie[];
+    movies: MovieApiResponse[];
 }
 
 export default function Carousel({movies}: CarouselProps) {
+
 
     const [movieIndexNumber, setMovieIndexNumber] = useState(0)
 
@@ -42,16 +43,17 @@ export default function Carousel({movies}: CarouselProps) {
                          style={{transform: `translateX(-${movieIndexNumber * 100}%)`}}>
 
 
-                        {movies.map((movie: Movie) => (
+                        {movies.map((movie) => (
                             <Image
                                 key={movie.id}
                                 className="w-full h-auto"
-                                src={movie.backDropPoster}
+                                src={`https://image.tmdb.org/t/p/original/${movie.backdrop_path}`}
                                 alt="Movie Poster"
                                 width={1920}
                                 height={1080}
                                 priority={movieIndexNumber === movies.indexOf(movie)}
                             />
+
                         ))}
 
                     </div>
@@ -63,7 +65,7 @@ export default function Carousel({movies}: CarouselProps) {
                 </div>
 
                 <div className="absolute right-1/2 translate-x-1/2 -translate-y-6">
-                    {movies.map((movie: Movie) => (
+                    {movies.map((movie) => (
                         <button className="transition duration-500 hover:scale-125 m-1"
                                 key={movie.id}
                                 onClick={() => setMovieIndexNumber(movies.indexOf(movie))}

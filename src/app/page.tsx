@@ -2,11 +2,22 @@
 "use client"
 import { useEffect, useState } from "react";
 import Carousel from "./carousel";
-import { Movie,MovieApiResponse } from "./types";
+import { MovieApiResponse } from "./types";
 import MovieSlider from "@/app/movieSlider";
 
+interface MovieCategories {
+    upcoming: MovieApiResponse[];
+    trending: MovieApiResponse[];
+    airing: MovieApiResponse[];
+}
+
 export default function Home() {
-    const [moviesResults, setMoviesResults] = useState<Movie[]>([]);
+    const [moviesByCategory, setMoviesByCategory] = useState<MovieCategories>({
+        upcoming: [],
+        trending: [],
+        airing: []
+    });
+
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -14,22 +25,32 @@ export default function Home() {
         const fetchMovies = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch("/api/movies");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                console.log(data)
-                const posterPath = "https://image.tmdb.org/t/p/original/";
+                //const response = await fetch("/api/movies");
+                const responses = await Promise.all([
+                    fetch("/api/movies?category=upcoming"),
+                    fetch("/api/movies?category=airing"),
+                    fetch("/api/movies?category=upcomingtrending")
+                ]);
 
-                const movies = data.results.map((movie: MovieApiResponse['results'][0]) => ({
-                    id: movie.id,
-                    title: movie.title,
-                    poster: `${posterPath}${movie.poster_path}`,
-                    backDropPoster: `${posterPath}${movie.backdrop_path}`
+                responses.forEach((response) =>{
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                })
+
+                const data = await Promise.all(responses.map((response) =>{
+                    return response.json()
                 }));
 
-                setMoviesResults(movies);
+                const categories = ['upcoming', 'airing', 'trending'];
+
+                categories.forEach((category, index)=>{
+
+                    setMoviesByCategory(prevState => ({
+                        ...prevState,
+                        [category]: data[index].results
+                    }));
+                })
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
                 console.error("Error fetching movies:", err);
@@ -40,6 +61,10 @@ export default function Home() {
 
         fetchMovies();
     }, []);
+
+    useEffect(() => {
+            console.log("Movies",moviesByCategory.airing);
+    }, [moviesByCategory]);
 
     if (isLoading) {
         return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
@@ -53,13 +78,13 @@ export default function Home() {
         <div className="min-h-screen flex flex-col">
 
             <main className="flex-grow">
-                {moviesResults.length > 0 ? (
+                {moviesByCategory.trending.length > 0 ? (
                     <>
-                        <Carousel movies={moviesResults.slice(0, 5)}/>
+                        <Carousel movies={moviesByCategory.trending.slice(0,5)}/>
                         <h1 className="text-2xl font-semibold m-12 ml-52 mb-4">AIRING</h1>
-                        <MovieSlider movies={moviesResults}/>
+                        <MovieSlider movies={moviesByCategory.airing}/>
                         <h1 className="text-2xl font-semibold m-12 ml-52 mb-4">UPCOMING</h1>
-                        <MovieSlider movies={moviesResults}/>
+                        <MovieSlider movies={moviesByCategory.upcoming}/>
                     </>
                 ) : (
                     <p className="text-center py-4">No movies found</p>
