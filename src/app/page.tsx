@@ -25,11 +25,11 @@ export default function Home() {
         const fetchMovies = async () => {
             try {
                 setIsLoading(true);
-                //const response = await fetch("/api/movies");
+                //const response = await fetch("/api/moviesAPI");
                 const responses = await Promise.all([
-                    fetch("/api/movies?category=upcoming"),
-                    fetch("/api/movies?category=airing"),
-                    fetch("/api/movies?category=upcomingtrending")
+                    fetch("/api/moviesAPI?category=upcoming"),
+                    fetch("/api/moviesAPI?category=airing"),
+                    fetch("/api/moviesAPI?category=upcomingtrending")
                 ]);
 
                 responses.forEach((response) =>{
@@ -53,7 +53,7 @@ export default function Home() {
                 })
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An error occurred');
-                console.error("Error fetching movies:", err);
+                console.error("Error fetching moviesAPI:", err);
             } finally {
                 setIsLoading(false);
             }

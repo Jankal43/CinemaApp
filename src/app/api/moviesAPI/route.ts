@@ -1,4 +1,4 @@
-// app/api/movies/route.ts
+// app/api/moviesAPI/route.ts
 import {MovieApiResponse} from '../../types';
 import {NextResponse} from 'next/server';
 
@@ -41,9 +41,9 @@ export async function GET(request: Request) {
         const data: MovieApiResponse = await response.json();
         return NextResponse.json(data);
     } catch (error) {
-        console.error('Error fetching movies:', error);
+        console.error('Error fetching moviesAPI:', error);
         return NextResponse.json(
-            {error: 'Failed to fetch movies'},
+            {error: 'Failed to fetch moviesAPI'},
             {status: 500}
         );
     }

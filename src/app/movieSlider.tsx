@@ -42,7 +42,8 @@ export default function MovieSlider({movies}: MovieSliderProps) {
                         <MovieLabel
                             key={`${movie.id}-${index}`}
                             movieTitle={movie.title}
-                            moviePoster={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
+                            moviePoster={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+                            movieId={movie.id}
                             className=""
                         />
                     ))}
