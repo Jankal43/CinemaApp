@@ -1,12 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { use } from 'react';
-
-interface Movie {
-    title: string;
-    description: string;
-}
+import {use, useEffect, useState} from 'react';
+import {MovieApiResponse} from "@/app/types";
+import MovieCard from "@/app/movieCard";
 
 interface PageParams {
     params: Promise<{
@@ -14,12 +10,11 @@ interface PageParams {
     }>;
 }
 
-export default function MovieDetailsPage({ params }: PageParams) {
-    // Type assertion for unwrapped params
+export default function MovieDetailsPage({params}: PageParams) {
     const unwrappedParams = use(params) as { movieId: number };
     const movieId = unwrappedParams.movieId;
 
-    const [movie, setMovie] = useState<Movie | null>(null);
+    const [movie, setMovie] = useState<MovieApiResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -31,7 +26,7 @@ export default function MovieDetailsPage({ params }: PageParams) {
                     throw new Error(`Failed to fetch movie details: ${response.status}`);
                 }
 
-                const movieAPI: Movie = await response.json();
+                const movieAPI: MovieApiResponse = await response.json();
                 setMovie(movieAPI);
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'An unknown error occurred');
@@ -42,6 +37,10 @@ export default function MovieDetailsPage({ params }: PageParams) {
 
         fetchMovieDetails();
     }, [movieId]);
+
+    useEffect(() => {
+        console.log(movie)
+    }, [movie]);
 
     if (loading) {
         return <div>Loading...</div>;
@@ -61,9 +60,9 @@ export default function MovieDetailsPage({ params }: PageParams) {
     }
 
     return (
-        <div>
-            <h1>{movie.title}</h1>
-            <p>{movie.description}</p>
+        <div className="relative min-h-screen h-[70vh] w-full flex items-center justify-center">
+            <MovieCard movie={movie}></MovieCard>
         </div>
     );
+
 }

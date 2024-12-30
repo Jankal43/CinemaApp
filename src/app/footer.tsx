@@ -1,8 +1,7 @@
 export default function Footer() {
     return (
-        <div>
-            This is the footer component.
-        </div>
+        <footer className="bg-black border-t-2 text-white h-12 flex items-center justify-center">
+            FOOTER
+        </footer>
     );
 }
-

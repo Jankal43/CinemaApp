@@ -1,8 +1,8 @@
 // page.tsx
 "use client"
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Carousel from "./carousel";
-import { MovieApiResponse } from "./types";
+import {MovieApiResponse} from "./types";
 import MovieSlider from "@/app/movieSlider";
 
 interface MovieCategories {
@@ -32,19 +32,19 @@ export default function Home() {
                     fetch("/api/moviesAPI?category=upcomingtrending")
                 ]);
 
-                responses.forEach((response) =>{
+                responses.forEach((response) => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                 })
 
-                const data = await Promise.all(responses.map((response) =>{
+                const data = await Promise.all(responses.map((response) => {
                     return response.json()
                 }));
 
                 const categories = ['upcoming', 'airing', 'trending'];
 
-                categories.forEach((category, index)=>{
+                categories.forEach((category, index) => {
 
                     setMoviesByCategory(prevState => ({
                         ...prevState,
@@ -63,7 +63,7 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-            console.log("Movies",moviesByCategory.airing);
+        console.log("Movies", moviesByCategory.airing);
     }, [moviesByCategory]);
 
     if (isLoading) {
@@ -75,12 +75,11 @@ export default function Home() {
     }
 
     return (
-        <div className="min-h-screen flex flex-col">
-
+        <div className="flex flex-col">
             <main className="flex-grow">
                 {moviesByCategory.trending.length > 0 ? (
                     <>
-                        <Carousel movies={moviesByCategory.trending.slice(0,5)}/>
+                        <Carousel movies={moviesByCategory.trending.slice(0, 5)}/>
                         <h1 className="text-2xl font-semibold m-12 ml-52 mb-4">AIRING</h1>
                         <MovieSlider movies={moviesByCategory.airing}/>
                         <h1 className="text-2xl font-semibold m-12 ml-52 mb-4">UPCOMING</h1>
