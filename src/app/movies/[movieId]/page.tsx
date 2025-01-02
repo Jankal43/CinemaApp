@@ -3,6 +3,7 @@
 import {use, useEffect, useState} from 'react';
 import {MovieApiResponse} from "@/app/types";
 import MovieCard from "@/app/movieCard";
+import CinemaLayout from "@/app/cinemaLayout";
 
 interface PageParams {
     params: Promise<{
@@ -60,9 +61,11 @@ export default function MovieDetailsPage({params}: PageParams) {
     }
 
     return (
-        <div className="relative min-h-screen h-[70vh] w-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center">
             <MovieCard movie={movie}></MovieCard>
+            <CinemaLayout/>
         </div>
+
     );
 
 }

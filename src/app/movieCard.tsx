@@ -7,9 +7,12 @@ interface MovieCard {
 
 
 export default function MovieCard({movie}: MovieCard) {
+
+    console.log("Genre id", movie.genre_ids)
+
     return (
-        <div className="m-12 h-full">
-            <div className="flex flex-col align-middle justify-center h-full w-1/4 bg-red-500">
+        <div className="w-1/3 h-dvh flex flex-col align-middle justify-center">
+            <div className= "border-2 m-5">
                 <Image
                     className="object-cover p-4 relative"
                     src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
@@ -18,9 +21,10 @@ export default function MovieCard({movie}: MovieCard) {
                     height={800}
 
                 />
-                <div className="text-black absolute w-1/4">
-                    <h1 className="font-bold">{movie.title}</h1>
-                    <p>{movie.overview}</p>
+                <div className="text-white text-center p-5 bg-gray-900 border-t-2 ">
+                    <h2 className="font-bold text-2xl">{movie.title}</h2>
+                    {/*<p className="">Produced by: {movie.genre}</p>*/}
+                    <p className="">Di {movie.overview}</p>
                 </div>
             </div>
         </div>
