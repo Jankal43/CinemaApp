@@ -39,9 +39,7 @@ export default function MovieDetailsPage({params}: PageParams) {
         fetchMovieDetails();
     }, [movieId]);
 
-    useEffect(() => {
-        console.log(movie)
-    }, [movie]);
+
 
     if (loading) {
         return <div>Loading...</div>;

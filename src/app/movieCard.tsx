@@ -6,6 +6,8 @@ interface MovieCard {
 }
 
 
+
+
 export default function MovieCard({movie}: MovieCard) {
 
     console.log("Genre id", movie.genre_ids)

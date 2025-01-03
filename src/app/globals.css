@@ -35,4 +35,7 @@ body {
   transform: rotate(135deg);
 }
 
-
+.screen {
+ border-top: 1px solid #FF033E;
+  border-radius: 72px 72px 0 0;
+}
