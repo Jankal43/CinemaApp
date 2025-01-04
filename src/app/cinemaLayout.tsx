@@ -93,9 +93,16 @@ const roomInfo: RoomInfo = {
     ],
 };
 
+interface CinemaLayoutProps{
+    rating: string;
+    title: string;
+    runtime: number;
+}
+
+export default function CinemaLayout({rating, title, runtime}:CinemaLayoutProps) {
 
 
-export default function CinemaLayout() {
+    console.log(rating, title, runtime)
 
     function divideSeats(seats: Seat[]): Record<string, string[]> {
         const newSeats: Record<string, string[]> = {};

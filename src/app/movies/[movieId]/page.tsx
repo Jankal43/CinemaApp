@@ -57,11 +57,14 @@ export default function MovieDetailsPage({params}: PageParams) {
     if (!movie) {
         return <div>No movie data available</div>;
     }
+    console.log("Rating",movie.vote_average)
+    console.log("Name",movie.original_title)
+    console.log("runtime",movie.runtime)
 
     return (
         <div className="w-full h-full flex items-center justify-center">
             <MovieCard movie={movie}></MovieCard>
-            <CinemaLayout/>
+            <CinemaLayout rating={movie.vote_average} title={movie.original_title} runtime={movie.runtime} />
         </div>
 
     );
