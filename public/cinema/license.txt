@@ -1,0 +1,11 @@
+Model Information:
+* title:	Cinema Of Boredom
+* source:	https://sketchfab.com/3d-models/cinema-of-boredom-1441f536430c4bf88072e65428e6f84d
+* author:	doorbin (https://sketchfab.com/woodland.mid)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Cinema Of Boredom" (https://sketchfab.com/3d-models/cinema-of-boredom-1441f536430c4bf88072e65428e6f84d) by doorbin (https://sketchfab.com/woodland.mid) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
