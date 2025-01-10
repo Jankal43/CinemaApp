@@ -43,3 +43,4 @@ export default function MovieCard({movie}: MovieCard) {
         </div>
     );
 }
+
