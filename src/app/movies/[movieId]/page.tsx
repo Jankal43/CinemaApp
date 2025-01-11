@@ -4,6 +4,7 @@ import {use, useEffect, useState} from 'react';
 import {MovieApiResponse} from "@/app/types";
 import MovieCard from "@/app/movieCard";
 import CinemaLayout from "@/app/cinemaLayout";
+import ThreeScene from "@/app/ThreeScene";
 
 interface PageParams {
     params: Promise<{

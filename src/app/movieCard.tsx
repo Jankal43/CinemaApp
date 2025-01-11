@@ -3,6 +3,7 @@ import {MovieApiResponse} from "@/app/types";
 
 interface MovieCard {
     movie: MovieApiResponse;
+
 }
 
 
