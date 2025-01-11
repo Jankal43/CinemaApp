@@ -2,12 +2,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 const ThreeScene = () => {
     const mountRef = useRef(null);
     const sceneRef = useRef(null);
     const rendererRef = useRef(null);
+    const animationFrameRef = useRef(null);
     const lightsRef = useRef({
         spotLight: null,
         ambientLight: null,
@@ -15,21 +15,34 @@ const ThreeScene = () => {
         redLight2: null
     });
     const cameraRef = useRef(null);
-    const controlsRef = useRef(null);
-    const [cameraCoords, setCameraCoords] = useState({ x: 0, y: 0, z: 0 });
+    const mouseRef = useRef({ x: 0, y: 0, isDown: false });
+    const rotationRef = useRef({ x: 0, y: 0 });
+    const [cameraDirection, setCameraDirection] = useState({ x: 0, y: 0, z: 0 });
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
         if (!mountRef.current) return;
 
-        console.log('Inicjalizacja komponentu ThreeScene');
+        let mounted = true;
+
+        // Dispose existing renderer if reinitializing
+        if (rendererRef.current) {
+            rendererRef.current.dispose();
+            rendererRef.current = null;
+        }
+
+        if (!mountRef.current) {
+            console.warn('Mount reference is missing');
+            return;
+        }
 
         const containerWidth = mountRef.current.clientWidth;
         const containerHeight = 600;
 
         const renderer = new THREE.WebGLRenderer({
             antialias: true,
-            alpha: true
+            alpha: true,
+            powerPreference: "high-performance"
         });
 
         renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -46,19 +59,10 @@ const ThreeScene = () => {
         sceneRef.current = scene;
 
         const camera = new THREE.PerspectiveCamera(45, containerWidth / containerHeight, 1, 1000);
-        camera.position.set(-0.50, 2.10, -1.50);
-        camera.lookAt(255,255,5);
-        //pierwszy prawo -0.38 1.63  -1.87
+        camera.position.set(3.75, 2.5, -0.78);
         cameraRef.current = camera;
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.enablePan = true;
-        controls.target.set(0, 1, 0);
-        controls.update();
-        controlsRef.current = controls;
-
-        const groundGeometry = new THREE.PlaneGeometry(20, 20, 32, 32);
+        const groundGeometry = new THREE.PlaneGeometry(20, 20);
         groundGeometry.rotateX(-Math.PI / 2);
         const groundMaterial = new THREE.MeshStandardMaterial({
             color: 0x331111,
@@ -92,8 +96,9 @@ const ThreeScene = () => {
 
         const loader = new GLTFLoader();
         loader.load(
-            '/cinema/scene.gltf',
+            `${process.env.PUBLIC_URL || ''}/cinema/scene.gltf`,
             (gltf) => {
+                if (!mounted) return;
                 const mesh = gltf.scene;
                 mesh.traverse((child) => {
                     if (child.isMesh) {
@@ -106,78 +111,103 @@ const ThreeScene = () => {
             },
             undefined,
             (error) => {
-                console.error('Błąd ładowania modelu:', error);
+                console.error('Error loading GLTF model:', error);
             }
         );
 
+        const handleMouseDown = (e) => {
+            if (!mounted) return;
+            mouseRef.current.isDown = true;
+            mouseRef.current.x = e.clientX;
+            mouseRef.current.y = e.clientY;
+        };
+
+        const handleMouseUp = () => {
+            if (!mounted) return;
+            mouseRef.current.isDown = false;
+        };
+
+        const handleMouseMove = (e) => {
+            if (!mouseRef.current.isDown || !mounted) return;
+
+            const deltaX = e.clientX - mouseRef.current.x;
+            const deltaY = e.clientY - mouseRef.current.y;
+
+            mouseRef.current.x = e.clientX;
+            mouseRef.current.y = e.clientY;
+
+            rotationRef.current.y -= deltaX * 0.01;
+            rotationRef.current.x = Math.max(
+                -Math.PI / 2,
+                Math.min(Math.PI / 2, rotationRef.current.x - deltaY * 0.01)
+            );
+
+            camera.rotation.order = 'YXZ';
+            camera.rotation.x = rotationRef.current.x;
+            camera.rotation.y = rotationRef.current.y;
+
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            setCameraDirection({
+                x: direction.x.toFixed(2),
+                y: direction.y.toFixed(2),
+                z: direction.z.toFixed(2)
+            });
+        };
+
         const handleResize = () => {
+            if (!mounted) return;
             const newWidth = mountRef.current.clientWidth;
             camera.aspect = newWidth / containerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(newWidth, containerHeight);
         };
+
         window.addEventListener('resize', handleResize);
-
-        const movementSpeed = 0.1;
-        const keys = {};
-        const handleKeyDown = (event) => {
-            keys[event.key.toLowerCase()] = true;
-        };
-
-        const handleKeyUp = (event) => {
-            keys[event.key.toLowerCase()] = false;
-        };
-
-
-
-        const updateCameraPosition = () => {
-            if (keys['w']) camera.position.z -= movementSpeed;
-            if (keys['s']) camera.position.z += movementSpeed;
-            if (keys['a']) camera.position.x -= movementSpeed;
-            if (keys['d']) camera.position.x += movementSpeed;
-            if (keys['q']) camera.position.y -= movementSpeed;
-            if (keys['e']) camera.position.y += movementSpeed;
-            setCameraCoords({
-                x: camera.position.x.toFixed(2),
-                y: camera.position.y.toFixed(2),
-                z: camera.position.z.toFixed(2)
-            });
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
+        mountRef.current.addEventListener('mousedown', handleMouseDown);
+        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener('mousemove', handleMouseMove);
 
         const animate = () => {
-            requestAnimationFrame(animate);
-            updateCameraPosition();
-            controls.update();
+            if (!mounted) return;
+            animationFrameRef.current = requestAnimationFrame(animate);
             renderer.render(scene, camera);
         };
 
         animate();
 
         return () => {
-            window.removeEventListener('resize', handleResize);
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
+            mounted = false;
 
-            if (mountRef.current) {
-                mountRef.current.removeChild(renderer.domElement);
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
             }
 
-            scene.traverse((object) => {
-                if (object.geometry) object.geometry.dispose();
-                if (object.material) {
-                    if (Array.isArray(object.material)) {
-                        object.material.forEach((mat) => mat.dispose());
-                    } else {
-                        object.material.dispose();
-                    }
-                }
-            });
+            window.removeEventListener('resize', handleResize);
+            mountRef.current?.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('mousemove', handleMouseMove);
 
-            renderer.dispose();
-            controls.dispose();
+            if (sceneRef.current) {
+                sceneRef.current.traverse((object) => {
+                    if (object.geometry) object.geometry.dispose();
+                    if (object.material) {
+                        if (Array.isArray(object.material)) {
+                            object.material.forEach((mat) => mat.dispose());
+                        } else {
+                            object.material.dispose();
+                        }
+                    }
+                });
+            }
+
+            if (rendererRef.current) {
+                if (mountRef.current) {
+                    mountRef.current.removeChild(rendererRef.current.domElement);
+                }
+                rendererRef.current.dispose();
+                rendererRef.current = null;
+            }
         };
     }, []);
 
@@ -189,7 +219,7 @@ const ThreeScene = () => {
                 style={{ height: '600px' }}
             />
             <div className="mt-4 text-white">
-                <p>Kamera: X: {cameraCoords.x}, Y: {cameraCoords.y}, Z: {cameraCoords.z}</p>
+                <p>Kierunek: X: {cameraDirection.x}, Y: {cameraDirection.y}, Z: {cameraDirection.z}</p>
             </div>
         </div>
     );

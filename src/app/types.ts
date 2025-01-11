@@ -2,7 +2,7 @@
 export interface MovieApiResponse {
     adult: boolean;
     backdrop_path: string;
-    genres: { id: string; name: string; };
+    genres: { name: string }[]; // Array of objects with a `name` property
     id: number;
     original_language: string;
     original_title: string;
@@ -14,8 +14,10 @@ export interface MovieApiResponse {
     video: boolean;
     vote_average: number;
     vote_count: number;
-    spoken_languages: { english_name: string; iso_639_1: string; name: string; };
+    spoken_languages: { english_name: string }[];
     runtime: number
+
+    // Array of objects with an `english_name` property
 }
 
 

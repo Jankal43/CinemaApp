@@ -3,6 +3,7 @@ import {MovieApiResponse} from "@/app/types";
 
 interface MovieCard {
     movie: MovieApiResponse;
+
 }
 
 
@@ -43,4 +44,3 @@ export default function MovieCard({movie}: MovieCard) {
         </div>
     );
 }
-
