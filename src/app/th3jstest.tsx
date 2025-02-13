@@ -70,8 +70,6 @@ const ThreeScene = () => {
             camera.position.set(3.75, 2.5, -0.78);
             cameraRef.current = camera;
 
-
-            console.log("Ground")
             // Ground
             const groundGeometry = new THREE.PlaneGeometry(20, 20);
             groundGeometry.rotateX(-Math.PI / 2);
@@ -86,25 +84,25 @@ const ThreeScene = () => {
             scene.add(groundMesh);
 
             // Lights
-            // const spotLight = new THREE.SpotLight(0xffffff, 5000);
-            // spotLight.position.set(0, 25, 0);
-            // spotLight.castShadow = true;
-            // scene.add(spotLight);
-            // lightsRef.current.spotLight = spotLight;
+            const spotLight = new THREE.SpotLight(0xffffff, 5000);
+            spotLight.position.set(0, 25, 0);
+            spotLight.castShadow = true;
+            scene.add(spotLight);
+            lightsRef.current.spotLight = spotLight;
 
             const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
             scene.add(ambientLight);
             lightsRef.current.ambientLight = ambientLight;
 
-            // const redLight1 = new THREE.PointLight(0xff0000, 100);
-            // redLight1.position.set(-5, 3, -5);
-            // scene.add(redLight1);
-            // lightsRef.current.redLight1 = redLight1;
+            const redLight1 = new THREE.PointLight(0xff0000, 100);
+            redLight1.position.set(-5, 3, -5);
+            scene.add(redLight1);
+            lightsRef.current.redLight1 = redLight1;
 
-            // const redLight2 = new THREE.PointLight(0xff0000, 100);
-            // redLight2.position.set(5, 3, -5);
-            // scene.add(redLight2);
-            // lightsRef.current.redLight2 = redLight2;
+            const redLight2 = new THREE.PointLight(0xff0000, 100);
+            redLight2.position.set(5, 3, -5);
+            scene.add(redLight2);
+            lightsRef.current.redLight2 = redLight2;
 
             console.log("Loading GLTF model...");
             const loader = new GLTFLoader();
