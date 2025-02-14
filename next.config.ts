@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import withTM from "next-transpile-modules";
 
 const nextConfig: NextConfig = {
     images: {
@@ -10,8 +11,6 @@ const nextConfig: NextConfig = {
             },
         ],
     },
-
 };
 
-
-export default nextConfig;
+export default withTM(["three"])(nextConfig);
