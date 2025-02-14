@@ -42,8 +42,8 @@ export default function CinemaLayout({ rating, title, runtime }: CinemaLayoutPro
         return currentScene === 1 ? (
             <SeatMap key={key} />
         ) : (
-            <div className="w-full" style={{ minHeight: '600px' }}>
-                <ThreeScene key={key} />
+            <div className="w-2/3  h-full" style={{ minHeight: '600px' }}>
+                <ThreeScene key={key}  />
             </div>
         );
     };
