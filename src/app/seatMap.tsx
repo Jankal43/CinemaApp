@@ -27,10 +27,10 @@ const roomInfo: RoomInfo = {
         {seat: "A6", status: "reserved"},
         {seat: "A7", status: "available"},
         {seat: "A8", status: "available"},
-        {seat: "A9", status: "reserved"},
-        {seat: "A10", status: "available"},
-        {seat: "A11", status: "available"},
-        {seat: "A12", status: "reserved"},
+        // {seat: "A9", status: "reserved"},
+        // {seat: "A10", status: "available"},
+        // {seat: "A11", status: "available"},
+        // {seat: "A12", status: "reserved"},
         {seat: "B1", status: "available"},
         {seat: "B2", status: "available"},
         {seat: "B3", status: "reserved"},
@@ -39,10 +39,10 @@ const roomInfo: RoomInfo = {
         {seat: "B6", status: "reserved"},
         {seat: "B7", status: "available"},
         {seat: "B8", status: "available"},
-        {seat: "B9", status: "reserved"},
-        {seat: "B10", status: "available"},
-        {seat: "B11", status: "available"},
-        {seat: "B12", status: "reserved"},
+        // {seat: "B9", status: "reserved"},
+        // {seat: "B10", status: "available"},
+        // {seat: "B11", status: "available"},
+        // {seat: "B12", status: "reserved"},
         {seat: "C1", status: "available"},
         {seat: "C2", status: "available"},
         {seat: "C3", status: "reserved"},
@@ -51,10 +51,10 @@ const roomInfo: RoomInfo = {
         {seat: "C6", status: "reserved"},
         {seat: "C7", status: "available"},
         {seat: "C8", status: "available"},
-        {seat: "C9", status: "reserved"},
-        {seat: "C10", status: "available"},
-        {seat: "C11", status: "available"},
-        {seat: "C12", status: "reserved"},
+        // {seat: "C9", status: "reserved"},
+        // {seat: "C10", status: "available"},
+        // {seat: "C11", status: "available"},
+        // {seat: "C12", status: "reserved"},
         {seat: "D1", status: "available"},
         {seat: "D2", status: "available"},
         {seat: "D3", status: "reserved"},
@@ -63,10 +63,10 @@ const roomInfo: RoomInfo = {
         {seat: "D6", status: "reserved"},
         {seat: "D7", status: "available"},
         {seat: "D8", status: "available"},
-        {seat: "D9", status: "reserved"},
-        {seat: "D10", status: "available"},
-        {seat: "D11", status: "available"},
-        {seat: "D12", status: "reserved"},
+        // {seat: "D9", status: "reserved"},
+        // {seat: "D10", status: "available"},
+        // {seat: "D11", status: "available"},
+        // {seat: "D12", status: "reserved"},
         {seat: "E1", status: "available"},
         {seat: "E2", status: "available"},
         {seat: "E3", status: "reserved"},
@@ -75,27 +75,27 @@ const roomInfo: RoomInfo = {
         {seat: "E6", status: "reserved"},
         {seat: "E7", status: "available"},
         {seat: "E8", status: "available"},
-        {seat: "E9", status: "reserved"},
-        {seat: "E10", status: "available"},
-        {seat: "E11", status: "available"},
-        {seat: "E12", status: "reserved"},
-        {seat: "F1", status: "available"},
-        {seat: "F2", status: "available"},
-        {seat: "F3", status: "reserved"},
-        {seat: "F4", status: "available"},
-        {seat: "F5", status: "available"},
-        {seat: "F6", status: "reserved"},
-        {seat: "F7", status: "available"},
-        {seat: "F8", status: "available"},
-        {seat: "F9", status: "reserved"},
-        {seat: "F10", status: "available"},
-        {seat: "F11", status: "available"},
-        {seat: "F12", status: "reserved"},
+        // {seat: "E9", status: "reserved"},
+        // {seat: "E10", status: "available"},
+        // {seat: "E11", status: "available"},
+        // {seat: "E12", status: "reserved"},
+        // {seat: "F1", status: "available"},
+        // {seat: "F2", status: "available"},
+        // {seat: "F3", status: "reserved"},
+        // {seat: "F4", status: "available"},
+        // {seat: "F5", status: "available"},
+        // {seat: "F6", status: "reserved"},
+        // {seat: "F7", status: "available"},
+        // {seat: "F8", status: "available"},
+        // {seat: "F9", status: "reserved"},
+        // {seat: "F10", status: "available"},
+        // {seat: "F11", status: "available"},
+        // {seat: "F12", status: "reserved"},
     ],
 };
 
 
-export default function SeatMap(){
+export default function SeatMap({ setPosition }: { setPosition: (pos: { x: number; y: number; z: number }) => void }){
 
     function divideSeats(seats: Seat[]): Record<string, string[]> {
         const newSeats: Record<string, string[]> = {};
@@ -110,6 +110,17 @@ export default function SeatMap(){
         return newSeats;
     }
 
+    function calculateCoordinates(seatIndex: number, rowLetter: string) {
+        const rowIndex = rowLetter.charCodeAt(0) - "A".charCodeAt(0);
+        const x:number= (7-seatIndex)*1.2
+        const y:number=  1.3+(rowIndex*0.7)
+        const z:number = rowIndex*(-2.3)
+
+        setPosition({x,y,z});
+
+        console.log("x:" ,x,"y:", y,"z:", z)
+        return { x,y,z};
+    }
 
     const seats: Record<string, string[]> = divideSeats(roomInfo.seats)
 
@@ -158,6 +169,8 @@ export default function SeatMap(){
                                 key={`${row}-${index}`}
                                 disabled={seat === "reserved"}
                                 className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-sm"
+                                onClick={()=>{calculateCoordinates(index,row)
+                                }}
                             >
                                 <MdEventSeat
                                     className={`text-2xl ${

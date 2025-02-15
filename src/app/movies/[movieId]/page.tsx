@@ -4,7 +4,6 @@ import {use, useEffect, useState} from 'react';
 import {MovieApiResponse} from "@/app/types";
 import MovieCard from "@/app/movieCard";
 import CinemaLayout from "@/app/cinemaLayout";
-import ThreeScene from "@/app/ThreeScene";
 
 interface PageParams {
     params: Promise<{
@@ -65,7 +64,7 @@ export default function MovieDetailsPage({params}: PageParams) {
     return (
         <div className="w-full h-full flex items-center justify-center">
             <MovieCard movie={movie}></MovieCard>
-            <CinemaLayout rating={movie.vote_average} title={movie.original_title} runtime={movie.runtime} />
+            <CinemaLayout />
         </div>
 
     );

@@ -3,16 +3,21 @@ import SeatMap from "@/app/seatMap";
 import { useState, useEffect, useCallback } from "react";
 import ThreeScene from "@/app/ThreeScene";
 
-interface CinemaLayoutProps {
-    rating: number;
-    title: string;
-    runtime: number;
-}
 
-export default function CinemaLayout({ rating, title, runtime }: CinemaLayoutProps) {
+
+
+
+export default function CinemaLayout() {
     const [currentScene, setCurrentScene] = useState(1);
     const [isTransitioning, setIsTransitioning] = useState(false);
-    const [key, setKey] = useState(0); // Wymuszenie remountu
+    const [key, setKey] = useState(0);
+
+
+    const [position, setPosition] = useState({ x: 3.6, y: 1.3, z: 0 });
+
+    useEffect(() => {
+        console.log(position.x, position.y , position.z)
+    }, [position]);
 
     useEffect(() => {
         console.log(`CinemaLayout mounted with scene: ${currentScene}`);
@@ -29,7 +34,7 @@ export default function CinemaLayout({ rating, title, runtime }: CinemaLayoutPro
 
         setTimeout(() => {
             setCurrentScene(newScene);
-            setKey((prev) => prev + 1); // Wymuszenie remountu
+            setKey((prev) => prev + 1);
             setIsTransitioning(false);
         }, 100);
     }, [isTransitioning]);
@@ -40,10 +45,10 @@ export default function CinemaLayout({ rating, title, runtime }: CinemaLayoutPro
         }
 
         return currentScene === 1 ? (
-            <SeatMap key={key} />
+            <SeatMap key={key} setPosition={setPosition}/>
         ) : (
             <div className="w-2/3  h-full" style={{ minHeight: '600px' }}>
-                <ThreeScene key={key}  />
+                <ThreeScene key={key} x={position.x} y={position.y} z={position.z} />
             </div>
         );
     };
