@@ -6,6 +6,7 @@ interface MovieCard {
 }
 
 
+
 export default function MovieCard({movie}: MovieCard) {
 
 
