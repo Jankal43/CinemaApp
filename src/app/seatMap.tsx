@@ -1,3 +1,4 @@
+"use client"
 import {MdEventSeat} from "react-icons/md";
 
 interface Seat {
