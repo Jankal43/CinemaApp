@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState} from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { PointerLockControls, useGLTF } from "@react-three/drei";
+
+
 
 interface ThreeSceneProps {
     x: number;
@@ -26,16 +28,26 @@ const FPSControls = () => {
 };
 
 const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
+    const [isLoading, setIsLoading] = useState(true);
+
     return (
-        <Canvas
-            style={{ width: "100%", height: "550px" }}
-            camera={{ position: [x, y, z], fov: 75 }} //w lewo 1.2
-        >
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[5, 5, 5]} intensity={1} />
-            <CinemaModel />
-            <FPSControls />
-        </Canvas>
+        <div className="relative">
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
+                    Loading 3D Scene...
+                </div>
+            )}
+            <Canvas
+                onCreated={() => setIsLoading(false)}
+                style={{ width: "100%", height: "550px" }}
+                camera={{ position: [x, y, z], fov: 75 }}
+            >
+                <ambientLight intensity={0.5} />
+                <directionalLight position={[5, 5, 5]} intensity={1} />
+                <CinemaModel />
+                <FPSControls />
+            </Canvas>
+        </div>
     );
 };
 
