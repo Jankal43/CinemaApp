@@ -3,7 +3,7 @@
 import { useEffect, useState} from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { PointerLockControls, useGLTF } from "@react-three/drei";
-
+import { Html } from "@react-three/drei";
 
 
 interface ThreeSceneProps {
@@ -13,8 +13,23 @@ interface ThreeSceneProps {
 }
 
 const CinemaModel = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const { scene } = useGLTF("/cinema/scene.gltf");
-    return <primitive object={scene} scale={1} />;
+
+    useEffect(() => {
+        setIsLoading(false); // Gdy model się załaduje, ukrywamy loader
+    }, [scene]);
+
+    return (
+        <>
+            {isLoading && (
+                <Html center>
+                    <div className="text-white bg-black p-2 rounded">Loading 3D Model...</div>
+                </Html>
+            )}
+            <primitive object={scene} scale={1} />
+        </>
+    );
 };
 
 const FPSControls = () => {
