@@ -17,7 +17,7 @@ const CinemaModel = () => {
     const { scene } = useGLTF("/cinema/scene.gltf");
 
     useEffect(() => {
-        setIsLoading(false); // Gdy model się załaduje, ukrywamy loader
+        setIsLoading(false);
     }, [scene]);
 
     return (
