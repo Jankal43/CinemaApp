@@ -122,34 +122,77 @@ const FPSControls = () => {
 const AudioSystem = ({ videoRef }: { videoRef: React.RefObject<HTMLVideoElement | null> }) => {
     const { camera } = useThree();
     const audioListener = useRef<THREE.AudioListener | null>(null);
-    const audioSource = useRef<THREE.PositionalAudio | null>(null);
+    const audioSources = useRef<THREE.PositionalAudio[]>([]);
     const [isAudioReady, setIsAudioReady] = useState(false);
+    const hasCreatedSource = useRef(false);
 
     useEffect(() => {
-        if (videoRef.current) {
+        if (videoRef.current && !hasCreatedSource.current) {
             const video = videoRef.current;
             
             // Create audio listener and attach it to the camera
             audioListener.current = new THREE.AudioListener();
             camera.add(audioListener.current);
 
-            // Create audio source
-            audioSource.current = new THREE.PositionalAudio(audioListener.current);
-            audioSource.current.setMediaElementSource(video);
-            audioSource.current.setRefDistance(20);
-            audioSource.current.setMaxDistance(50);
-            audioSource.current.setRolloffFactor(1);
-            audioSource.current.setLoop(true);
+            try {
+                // Use the audio context from the listener
+                const audioContext = audioListener.current.context;
+                const source = audioContext.createMediaElementSource(video);
+                const gainNode = audioContext.createGain();
+                
+                // Create multiple audio sources for stereo/surround effect
+                const positions = [
+                    { x: 3.95, y: 2, z: 5, pan: -1 },    // Left speaker
+                    { x: 3.95, y: 2, z: 5, pan: 1 },     // Right speaker
+                    { x: 3.95, y: 2, z: 5, pan: 0 },     // Center speaker
+                    { x: 3.95, y: 2, z: 5, pan: -0.5 },  // Left surround
+                    { x: 3.95, y: 2, z: 5, pan: 0.5 },   // Right surround
+                ];
 
-            // Position the audio source at the screen location
-            audioSource.current.position.set(3.95, 2, 5);
-
-            setIsAudioReady(true);
+                positions.forEach(({ x, y, z, pan }) => {
+                    if (!audioListener.current) return;
+                    
+                    const audioSource = new THREE.PositionalAudio(audioListener.current);
+                    const sourceGain = audioContext.createGain();
+                    const sourcePanner = audioContext.createPanner();
+                    
+                    // Set up the audio chain
+                    source.connect(sourceGain);
+                    sourceGain.connect(sourcePanner);
+                    sourcePanner.connect(audioSource.gain);
+                    
+                    // Configure the panner for stereo effect
+                    sourcePanner.setPosition(x, y, z);
+                    sourcePanner.setOrientation(pan, 0, 0);
+                    
+                    // Set up the positional audio properties
+                    audioSource.setRefDistance(20);
+                    audioSource.setMaxDistance(50);
+                    audioSource.setRolloffFactor(1);
+                    audioSource.setLoop(true);
+                    
+                    // Position the audio source
+                    audioSource.position.set(x, y, z);
+                    
+                    audioSources.current.push(audioSource);
+                });
+                
+                hasCreatedSource.current = true;
+                setIsAudioReady(true);
+            } catch (error) {
+                console.error("Error setting up audio:", error);
+            }
 
             return () => {
-                if (audioSource.current) {
-                    audioSource.current.stop();
-                }
+                // Clean up all audio sources
+                audioSources.current.forEach(source => {
+                    source.stop();
+                    if (source.source) {
+                        source.source.disconnect();
+                    }
+                });
+                audioSources.current = [];
+                
                 if (audioListener.current) {
                     camera.remove(audioListener.current);
                 }
@@ -167,6 +210,7 @@ const AudioSystem = ({ videoRef }: { videoRef: React.RefObject<HTMLVideoElement 
 const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
     const [isLoading, setIsLoading] = useState(true);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [isAudioEnabled, setIsAudioEnabled] = useState(false);
 
     useEffect(() => {
         if (videoRef.current) {
@@ -184,6 +228,13 @@ const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
         }
     }, []);
 
+    const toggleAudio = () => {
+        if (videoRef.current) {
+            videoRef.current.muted = !videoRef.current.muted;
+            setIsAudioEnabled(!isAudioEnabled);
+        }
+    };
+
     return (
         <div className="relative">
             {isLoading && (
@@ -191,6 +242,12 @@ const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
                     Loading 3D Scene...
                 </div>
             )}
+            <button
+                onClick={toggleAudio}
+                className="absolute top-4 right-4 z-10 bg-black bg-opacity-50 text-white px-4 py-2 rounded hover:bg-opacity-75"
+            >
+                {isAudioEnabled ? '🔊 Sound On' : '🔈 Sound Off'}
+            </button>
             <video
                 ref={videoRef}
                 src="/videos/sample.mp4"
@@ -203,6 +260,12 @@ const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
                 onCreated={() => setIsLoading(false)}
                 style={{ width: "100%", height: "550px" }}
                 camera={{ position: [x, y, z], fov: 75 }}
+                gl={{ 
+                    preserveDrawingBuffer: true,
+                    powerPreference: "high-performance",
+                    antialias: true
+                }}
+                dpr={[1, 2]}
             >
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[5, 5, 5]} intensity={1} />
