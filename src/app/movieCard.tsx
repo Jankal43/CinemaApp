@@ -19,7 +19,7 @@ export default function MovieCard({movie}: MovieCard) {
                     alt={`${movie.title} Poster`}
                     width={600}
                     height={800}
-
+                    priority
                 />
                 <div className="text-white text-center p-5 border-t-2">
                     <h2 className="font-bold text-2xl">{movie.title}</h2>

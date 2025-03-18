@@ -30,6 +30,7 @@ export default function Header() {
                     alt="Icon"
                     width={50}
                     height={50}
+                    priority
                 />
                 <p className="font-semibold ">CINEMA PLANET</p>
 

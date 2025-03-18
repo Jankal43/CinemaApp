@@ -4,10 +4,6 @@ import SeatMap from "@/app/seatMap";
 import { useState, useEffect, useCallback } from "react";
 import ThreeScene from "@/app/ThreeScene";
 
-
-
-
-
 export default function CinemaLayout() {
     const [currentScene, setCurrentScene] = useState(1);
     const [isTransitioning, setIsTransitioning] = useState(false);
@@ -15,17 +11,6 @@ export default function CinemaLayout() {
 
 
     const [position, setPosition] = useState({ x: 3.6, y: 1.3, z: 0 });
-
-    useEffect(() => {
-        console.log(position.x, position.y , position.z)
-    }, [position]);
-
-    useEffect(() => {
-        console.log(`CinemaLayout mounted with scene: ${currentScene}`);
-        return () => {
-            console.log("CinemaLayout unmounting");
-        };
-    }, []);
 
     const handleSceneChange = useCallback((newScene: number) => {
         if (isTransitioning) return;
