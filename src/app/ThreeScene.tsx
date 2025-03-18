@@ -2,8 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { PointerLockControls, useGLTF, useTexture } from "@react-three/drei";
-import { Html } from "@react-three/drei";
+import { PointerLockControls, useGLTF, Html } from "@react-three/drei";
 import * as THREE from "three";
 
 interface ThreeSceneProps {
@@ -91,7 +90,7 @@ const CinemaModel = () => {
 
 const FPSControls = () => {
     const { camera } = useThree();
-    const [isLocked, setIsLocked] = useState(false);
+    const [, setIsLocked] = useState(false);
 
     useEffect(() => {
         camera.lookAt(5, 1.3, 5);
@@ -138,7 +137,6 @@ const AudioSystem = ({ videoRef }: { videoRef: React.RefObject<HTMLVideoElement 
                 // Use the audio context from the listener
                 const audioContext = audioListener.current.context;
                 const source = audioContext.createMediaElementSource(video);
-                const gainNode = audioContext.createGain();
                 
                 // Create multiple audio sources for stereo/surround effect
                 const positions = [
