@@ -1,7 +1,7 @@
 "use client"
 //dodalem ale nie wiem czy potrzeba
 import SeatMap from "@/app/seatMap";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import ThreeScene from "@/app/ThreeScene";
 
 export default function CinemaLayout() {
