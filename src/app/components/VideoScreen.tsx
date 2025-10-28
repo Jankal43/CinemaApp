@@ -33,8 +33,9 @@ function VideoAndAudioPlayer({ src }: { src: string }) {
     const audioRef = useRef<{
         listener: THREE.AudioListener | null,
         source: MediaElementAudioSourceNode | null,
-        positionalAudio: THREE.PositionalAudio | null
-    }>({ listener: null, source: null, positionalAudio: null });
+        positionalAudio: THREE.PositionalAudio | null,
+        isInitialized: boolean
+    }>({ listener: null, source: null, positionalAudio: null, isInitialized: false });
 
     // 1. Używamy 'useVideoTexture' do wideo
     const texture = useVideoTexture(src, {
@@ -51,30 +52,64 @@ function VideoAndAudioPlayer({ src }: { src: string }) {
 
     // 3. Logika audio odporna na Strict Mode
     useEffect(() => {
-  if (!videoElement || !camera || !groupRef.current) return;
+        if (!videoElement || !camera || !groupRef.current || audioRef.current.isInitialized) return;
 
-  // Upewniamy się, że audio nie zostało już zainicjowane
-  if (!audioRef.current.positionalAudio) {
-    console.log("Setting up positional audio once...");
+        console.log("Setting up positional audio...");
 
-    const listener = new THREE.AudioListener();
-    camera.add(listener);
+        const listener = new THREE.AudioListener();
+        camera.add(listener);
 
-    const positionalAudio = new THREE.PositionalAudio(listener);
-    positionalAudio.setMediaElementSource(videoElement); // ✅ zamiast createMediaElementSource + getInput()
-    positionalAudio.setRefDistance(20);
-    positionalAudio.setMaxDistance(50);
-    positionalAudio.setRolloffFactor(1);
+        const positionalAudio = new THREE.PositionalAudio(listener);
+        
+        try {
+            // Sprawdź czy video element nie jest już połączony z audio context
+            if (videoElement.srcObject || videoElement.crossOrigin) {
+                console.log("Video element already has audio context, skipping audio setup");
+                camera.remove(listener);
+                return;
+            }
 
-    groupRef.current.add(positionalAudio);
+            positionalAudio.setMediaElementSource(videoElement);
+            positionalAudio.setRefDistance(20);
+            positionalAudio.setMaxDistance(50);
+            positionalAudio.setRolloffFactor(1);
 
-    // Zachowaj referencje
-    audioRef.current = { listener, source: null, positionalAudio };
-  }
+            groupRef.current.add(positionalAudio);
+
+            // Zachowaj referencje
+            audioRef.current = { 
+                listener, 
+                source: null, 
+                positionalAudio, 
+                isInitialized: true 
+            };
+        } catch (error) {
+            console.error("Error setting up audio:", error);
+            // Clean up on error
+            camera.remove(listener);
+        }
 
   return () => {
-    // W Strict Mode React odpala cleanup dwa razy, więc musimy uważać
-    console.log("Audio cleanup (ignored in Strict Mode)");
+    // Proper cleanup when component unmounts
+    console.log("Cleaning up audio resources...");
+    
+    if (audioRef.current.positionalAudio) {
+      try {
+        audioRef.current.positionalAudio.stop();
+        if (audioRef.current.positionalAudio.source) {
+          audioRef.current.positionalAudio.source.disconnect();
+        }
+      } catch (error) {
+        console.error("Error stopping audio:", error);
+      }
+    }
+    
+    if (audioRef.current.listener) {
+      camera.remove(audioRef.current.listener);
+    }
+    
+    // Reset audio ref
+    audioRef.current = { listener: null, source: null, positionalAudio: null, isInitialized: false };
   };
 }, [videoElement, camera]);
 
@@ -93,6 +128,47 @@ function VideoAndAudioPlayer({ src }: { src: string }) {
             console.log(`Video muted state set to: ${!isAudioEnabled}`);
         }
     }, [isAudioEnabled, videoElement]);
+
+    // Cleanup effect to pause video when component unmounts
+    useEffect(() => {
+        return () => {
+            if (videoElement) {
+                console.log("Pausing video on component unmount");
+                videoElement.pause();
+                videoElement.currentTime = 0;
+            }
+        };
+    }, [videoElement]);
+
+    // Global cleanup effect for the entire component
+    useEffect(() => {
+        return () => {
+            console.log("VideoAndAudioPlayer unmounting - final cleanup");
+            
+            // Force cleanup of all audio resources
+            if (audioRef.current.positionalAudio) {
+                try {
+                    audioRef.current.positionalAudio.stop();
+                    if (audioRef.current.positionalAudio.source) {
+                        audioRef.current.positionalAudio.source.disconnect();
+                    }
+                } catch (error) {
+                    console.error("Final audio cleanup error:", error);
+                }
+            }
+            
+            if (audioRef.current.listener) {
+                try {
+                    camera.remove(audioRef.current.listener);
+                } catch (error) {
+                    console.error("Final listener cleanup error:", error);
+                }
+            }
+            
+            // Reset everything
+            audioRef.current = { listener: null, source: null, positionalAudio: null, isInitialized: false };
+        };
+    }, [camera]);
 
     return (
         <group ref={groupRef} position={[3.95, 2, 5]}>
@@ -119,7 +195,7 @@ function VideoAndAudioPlayer({ src }: { src: string }) {
     );
 }
 
-// Komponent-wrapper (bez zmian)
+// Komponent-wrapper z cleanup
 const VideoScreen = () => {
     return (
         <Suspense fallback={<VideoLoadingFallback />}>

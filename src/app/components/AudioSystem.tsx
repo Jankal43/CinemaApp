@@ -72,18 +72,32 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
             }
 
             return () => {
+                console.log("Cleaning up AudioSystem...");
+                
                 // Clean up all audio sources
                 audioSources.current.forEach(source => {
-                    source.stop();
-                    if (source.source) {
-                        source.source.disconnect();
+                    try {
+                        source.stop();
+                        if (source.source) {
+                            source.source.disconnect();
+                        }
+                    } catch (error) {
+                        console.error("Error stopping audio source:", error);
                     }
                 });
                 audioSources.current = [];
                 
                 if (audioListener.current) {
-                    camera.remove(audioListener.current);
+                    try {
+                        camera.remove(audioListener.current);
+                    } catch (error) {
+                        console.error("Error removing audio listener:", error);
+                    }
                 }
+                
+                // Reset flags
+                hasCreatedSource.current = false;
+                setIsAudioReady(false);
             };
         }
     }, [camera, videoRef]);

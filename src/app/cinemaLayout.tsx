@@ -16,8 +16,8 @@ export default function CinemaLayout() {
 
       setTimeout(() => {
         setCurrentScene(newScene);
-        // Jeśli wracamy do podglądu 3D, zwiększamy klucz, żeby wymusić pełny reset
-        if (newScene === 0) setSceneKey((prev) => prev + 1);
+        // Zwiększamy klucz przy każdej zmianie sceny, żeby wymusić pełny reset
+        setSceneKey((prev) => prev + 1);
         setIsTransitioning(false);
       }, 100);
     },
@@ -54,11 +54,11 @@ export default function CinemaLayout() {
       <div className="w-full flex justify-center items-center" style={{ minHeight: "600px" }}>
         {currentScene === 1 ? (
           <SeatMap setPosition={setPosition} />
-        ) : (
+        ) : currentScene === 0 ? (
           <div className="w-2/3 h-full">
             <ThreeScene key={sceneKey} x={position.x} y={position.y} z={position.z} />
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
