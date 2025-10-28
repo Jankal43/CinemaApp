@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import VideoScreen from "./components/VideoScreen"; // Importujemy nowy, samowystarczalny VideoScreen
+import VideoScreen from "./components/VideoScreen";
+import AudioSystem from "./components/AudioSystem";
 import CinemaModel from "./components/CinemaModel";
 import FPSControls from "./components/FPSControls";
 
@@ -14,7 +15,7 @@ interface ThreeSceneProps {
 
 const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
     const [isLoading, setIsLoading] = useState(true);
-    // Usuwamy całą logikę związaną z videoRef i isAudioEnabled
+    const videoRef = useRef<HTMLVideoElement | null>(null);
 
     return (
         <div className="relative">
@@ -38,7 +39,8 @@ const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[5, 5, 5]} intensity={1} />
                 <CinemaModel />
-                <VideoScreen /> {/* Renderujemy VideoScreen bez żadnych propsów */}
+                <VideoScreen videoRef={videoRef} />
+                <AudioSystem videoRef={videoRef} />
                 <FPSControls />
             </Canvas>
         </div>

@@ -23,19 +23,10 @@ function VideoLoadingFallback() {
 }
 
 
-// --- Główny, połączony komponent ---
-function VideoAndAudioPlayer({ src }: { src: string }) {
-    const { camera } = useThree();
+// --- Komponent tylko do video (bez audio) ---
+function VideoPlayer({ src, videoRef }: { src: string, videoRef: React.RefObject<HTMLVideoElement | null> }) {
     const groupRef = useRef<THREE.Group>(null);
     const [isAudioEnabled, setIsAudioEnabled] = useState(false);
-    
-    // Użyj refa do przechowywania obiektu audio, aby zapobiec ponownemu tworzeniu
-    const audioRef = useRef<{
-        listener: THREE.AudioListener | null,
-        source: MediaElementAudioSourceNode | null,
-        positionalAudio: THREE.PositionalAudio | null,
-        isInitialized: boolean
-    }>({ listener: null, source: null, positionalAudio: null, isInitialized: false });
 
     // 1. Używamy 'useVideoTexture' do wideo
     const texture = useVideoTexture(src, {
@@ -47,76 +38,17 @@ function VideoAndAudioPlayer({ src }: { src: string }) {
     texture.wrapS = THREE.RepeatWrapping;
     texture.repeat.x = -1;
 
-    // 2. Wyciągamy element <video> stworzony przez useVideoTexture
+    // 2. Wyciągamy element <video> i przekazujemy do ref
     const videoElement = texture.source.data as HTMLVideoElement;
-
-    // 3. Logika audio odporna na Strict Mode
+    
+    // Przekazujemy video element do ref dla AudioSystem
     useEffect(() => {
-        if (!videoElement || !camera || !groupRef.current || audioRef.current.isInitialized) return;
-
-        console.log("Setting up positional audio...");
-
-        const listener = new THREE.AudioListener();
-        camera.add(listener);
-
-        const positionalAudio = new THREE.PositionalAudio(listener);
-        
-        try {
-            // Sprawdź czy video element nie jest już połączony z audio context
-            if (videoElement.srcObject || videoElement.crossOrigin) {
-                console.log("Video element already has audio context, skipping audio setup");
-                camera.remove(listener);
-                return;
-            }
-
-            positionalAudio.setMediaElementSource(videoElement);
-            positionalAudio.setRefDistance(20);
-            positionalAudio.setMaxDistance(50);
-            positionalAudio.setRolloffFactor(1);
-
-            groupRef.current.add(positionalAudio);
-
-            // Zachowaj referencje
-            audioRef.current = { 
-                listener, 
-                source: null, 
-                positionalAudio, 
-                isInitialized: true 
-            };
-        } catch (error) {
-            console.error("Error setting up audio:", error);
-            // Clean up on error
-            camera.remove(listener);
+        if (videoElement && videoRef) {
+            videoRef.current = videoElement;
         }
+    }, [videoElement, videoRef]);
 
-  return () => {
-    // Proper cleanup when component unmounts
-    console.log("Cleaning up audio resources...");
-    
-    if (audioRef.current.positionalAudio) {
-      try {
-        audioRef.current.positionalAudio.stop();
-        if (audioRef.current.positionalAudio.source) {
-          audioRef.current.positionalAudio.source.disconnect();
-        }
-      } catch (error) {
-        console.error("Error stopping audio:", error);
-      }
-    }
-    
-    if (audioRef.current.listener) {
-      camera.remove(audioRef.current.listener);
-    }
-    
-    // Reset audio ref
-    audioRef.current = { listener: null, source: null, positionalAudio: null, isInitialized: false };
-  };
-}, [videoElement, camera]);
-
-
-  
-
-    // 4. Logika do przełączania mutowania
+    // 3. Logika do przełączania mutowania
     const handleToggleAudio = (event: React.MouseEvent) => {
         event.stopPropagation();
         setIsAudioEnabled(prev => !prev);
@@ -139,36 +71,6 @@ function VideoAndAudioPlayer({ src }: { src: string }) {
             }
         };
     }, [videoElement]);
-
-    // Global cleanup effect for the entire component
-    useEffect(() => {
-        return () => {
-            console.log("VideoAndAudioPlayer unmounting - final cleanup");
-            
-            // Force cleanup of all audio resources
-            if (audioRef.current.positionalAudio) {
-                try {
-                    audioRef.current.positionalAudio.stop();
-                    if (audioRef.current.positionalAudio.source) {
-                        audioRef.current.positionalAudio.source.disconnect();
-                    }
-                } catch (error) {
-                    console.error("Final audio cleanup error:", error);
-                }
-            }
-            
-            if (audioRef.current.listener) {
-                try {
-                    camera.remove(audioRef.current.listener);
-                } catch (error) {
-                    console.error("Final listener cleanup error:", error);
-                }
-            }
-            
-            // Reset everything
-            audioRef.current = { listener: null, source: null, positionalAudio: null, isInitialized: false };
-        };
-    }, [camera]);
 
     return (
         <group ref={groupRef} position={[3.95, 2, 5]}>
@@ -196,10 +98,10 @@ function VideoAndAudioPlayer({ src }: { src: string }) {
 }
 
 // Komponent-wrapper z cleanup
-const VideoScreen = () => {
+const VideoScreen = ({ videoRef }: { videoRef: React.RefObject<HTMLVideoElement | null> }) => {
     return (
         <Suspense fallback={<VideoLoadingFallback />}>
-            <VideoAndAudioPlayer src="/videos/sample2.mp4" />
+            <VideoPlayer src="/videos/sample2.mp4" videoRef={videoRef} />
         </Suspense>
     );
 };
