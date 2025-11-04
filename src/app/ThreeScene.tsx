@@ -16,7 +16,7 @@ interface ThreeSceneProps {
 const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
     const [isLoading, setIsLoading] = useState(true);
     const videoRef = useRef<HTMLVideoElement | null>(null);
-
+    console.log(x,y,z);
     return (
         <div className="relative">
             {isLoading && (
