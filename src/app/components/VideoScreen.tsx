@@ -1,10 +1,8 @@
 "use client";
 
 import { useVideoTexture, Html } from "@react-three/drei";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
-import { useThree } from "@react-three/fiber";
-import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 
 // Komponent glosnika
 const Speaker = ({ position, label }: { position: [number, number, number], label: string }) => {
@@ -56,9 +54,8 @@ function VideoLoadingFallback() {
 
 
 // --- Komponent tylko do video (bez audio) ---
-function VideoPlayer({ src, videoRef }: { src: string, videoRef: React.RefObject<HTMLVideoElement | null> }) {
+function VideoPlayer({ src, videoRef, isAudioEnabled }: { src: string, videoRef: React.RefObject<HTMLVideoElement | null>, isAudioEnabled: boolean }) {
     const groupRef = useRef<THREE.Group>(null);
-    const [isAudioEnabled, setIsAudioEnabled] = useState(false);
 
     // 1. Używamy 'useVideoTexture' do wideo
     const texture = useVideoTexture(src, {
@@ -80,12 +77,6 @@ function VideoPlayer({ src, videoRef }: { src: string, videoRef: React.RefObject
         }
     }, [videoElement, videoRef]);
 
-    // 3. Logika do przełączania mutowaniagit
-    const handleToggleAudio = (event: React.MouseEvent) => {
-        event.stopPropagation();
-        setIsAudioEnabled(prev => !prev);
-    };
-
     useEffect(() => {
         if (videoElement) {
             videoElement.muted = !isAudioEnabled;
@@ -105,13 +96,13 @@ function VideoPlayer({ src, videoRef }: { src: string, videoRef: React.RefObject
     }, [videoElement]);
 
     // Pozycje glosników w układzie surround (2 z przodu, 2 z tyłu, 1 na środku)
-    const speakerPositions = [
-        { position: [1.5, 2, 5] as [number, number, number], label: "Left Front" },      // Lewy przedni
-        { position: [6.4, 2, 5] as [number, number, number], label: "Right Front" },     // Prawy przedni
-        { position: [3.95, 2, 5] as [number, number, number], label: "Center" },         // Środek
-        { position: [1.5, 2, 1] as [number, number, number], label: "Left Rear" },       // Lewy tylny
-        { position: [6.4, 2, 1] as [number, number, number], label: "Right Rear" },     // Prawy tylny
-    ];
+    // const speakerPositions = [
+    //     { position: [1.5, 2, 5] as [number, number, number], label: "Left Front" },      // Lewy przedni
+    //     { position: [6.4, 2, 5] as [number, number, number], label: "Right Front" },     // Prawy przedni
+    //     { position: [3.95, 2, 5] as [number, number, number], label: "Center" },         // Środek
+    //     { position: [1.5, 2, 1] as [number, number, number], label: "Left Rear" },       // Lewy tylny
+    //     { position: [6.4, 2, 1] as [number, number, number], label: "Right Rear" },     // Prawy tylny
+    // ];
 
     return (
         <group ref={groupRef}>
@@ -121,40 +112,25 @@ function VideoPlayer({ src, videoRef }: { src: string, videoRef: React.RefObject
                     <planeGeometry />
                     <meshBasicMaterial map={texture} toneMapped={false} />
                 </mesh>
-                
-                <Html position={[0, -2.8, 0.1]} transform>
-                    <div 
-                        className="flex items-center justify-center bg-gray-800 bg-opacity-80 rounded-full shadow-lg cursor-pointer"
-                        style={{
-                            width: '48px',
-                            height: '48px',
-                            fontSize: '24px',
-                            color: 'white'
-                        }}
-                        onClick={handleToggleAudio}
-                    >
-                        {isAudioEnabled ? <FaVolumeUp /> : <FaVolumeMute />}
-                    </div>
-                </Html>
             </group>
             
             {/* Renderuj glosniki */}
-            {speakerPositions.map((speaker, index) => (
+            {/* {speakerPositions.map((speaker, index) => (
                 <Speaker 
                     key={index}
                     position={speaker.position} 
                     label={speaker.label} 
                 />
-            ))}
+            ))} */}
         </group>
     );
 }
 
-// Komponent-wrapper z cleanup
-const VideoScreen = ({ videoRef }: { videoRef: React.RefObject<HTMLVideoElement | null> }) => {
+
+const VideoScreen = ({ videoRef, isAudioEnabled }: { videoRef: React.RefObject<HTMLVideoElement | null>, isAudioEnabled: boolean }) => {
     return (
         <Suspense fallback={<VideoLoadingFallback />}>
-            <VideoPlayer src="/videos/sample2.mp4" videoRef={videoRef} />
+            <VideoPlayer src="/videos/sample2.mp4" videoRef={videoRef} isAudioEnabled={isAudioEnabled} />
         </Suspense>
     );
 };

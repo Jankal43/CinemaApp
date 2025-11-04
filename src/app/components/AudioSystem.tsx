@@ -28,20 +28,13 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
                 const audioContext = audioListener.current.context;
                 const source = audioContext.createMediaElementSource(video);
                 
-                // Create multiple audio sources for stereo/surround effect
-                // const positions = [
-                //     { x: 1.5, y: 2, z: 5, pan: -1 },     // Left Front speaker
-                //     { x: 6.4, y: 2, z: 5, pan: 1 },      // Right Front speaker
-                //     { x: 3.95, y: 2, z: 5, pan: 0 },     // Center speaker
-                //     { x: 1.5, y: 2, z: 1, pan: -0.5 },  // Left Rear speaker
-                //     { x: 6.4, y: 2, z: 1, pan: 0.5 },    // Right Rear speaker
-                // ];
+              
                 const positions = [
-                    { x: 8.4, y: 1.3, z: 0, pan: -1 },     // Left Front speaker
-                    { x: 0, y: 1.3, z: 0, pan: 1 },      // Right Front speaker
-                    // { x: 3.95, y: 2, z: 5, pan: 0 },     // Center speaker
-                    { x: 8.4, y: 4.1, z: 0, pan: -9.2 },  // Left Rear speaker
-                    { x: 0, y: 4.1, z: 0, pan: -9.2 },     // Right Rear speaker
+                    { x: 9.4, y: 1.3, z: 0, pan: -1 },     // Left Front speaker
+                    { x: -1, y: 1.3, z: 0, pan: 1 },      // Right Front speaker
+                    { x: 4.2, y: 0, z: 2.3, pan: 0 },     // Center speaker
+                    { x: 9.4, y: 4.1, z: 0, pan: -9.2 },  // Left Rear speaker
+                    { x: -1, y: 4.1, z: 0, pan: -9.2 },     // Right Rear speaker
                 ];
                 positions.forEach(({ x, y, z, pan }) => {
                     if (!audioListener.current) return;
