@@ -53,7 +53,7 @@ export default function Carousel({movies}: CarouselProps) {
                 <div className="relative border-t-2 min-h-[4rem] mt-2">
                     <p className={`
                         absolute font-sans font-semibold w-full bottom-0 left-0 p-2  ml-3
-                        text-white shadow-text-border truncate
+                        text-white translate-y-3 shadow-text-border truncate
                         text-lg sm:text-xl md:text-2xl lg:text-3xl
                         ${movies[movieIndexNumber].title.length > 20 ? "md:text-xl lg:text-2xl" : ""}
                     `}>

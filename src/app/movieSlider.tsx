@@ -50,10 +50,10 @@ export default function MovieSlider({movies}: MovieSliderProps) {
                 </div>
 
                 <ArrowButton onClick={showNextImage}
-                             className="z-50 flex items-center justify-center absolute -translate-x-12 border-gray-500 border-2 bg-gray-800 p-4 right-0 top-1/2 -translate-y-1/2"
+                             className="flex items-center justify-center absolute -translate-x-12 border-gray-500 border-2 bg-gray-800 p-4 right-0 top-1/2 -translate-y-1/2"
                              direction={"right"}/>
                 <ArrowButton onClick={showPrevImage}
-                             className="z-50 flex items-center justify-center absolute translate-x-12 border-gray-500 border-2 bg-gray-800 p-4 left-0 top-1/2 -translate-y-1/2 "
+                             className="flex items-center justify-center absolute translate-x-12 border-gray-500 border-2 bg-gray-800 p-4 left-0 top-1/2 -translate-y-1/2 "
                              direction={"left"}/>
 
             </div>

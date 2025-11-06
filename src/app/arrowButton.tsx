@@ -14,7 +14,7 @@ export default function ArrowButton({
             onClick={onClick}
         >
             <div
-                className={`arrow ${direction} border-white hover:border-gray-300 transition-colors`}
+                className={`arrow ${direction} border-white m hover:border-gray-300`}
             ></div>
         </button>
     );

@@ -6,6 +6,7 @@ import VideoScreen from "./components/VideoScreen";
 import AudioSystem from "./components/AudioSystem";
 import CinemaModel from "./components/CinemaModel";
 import FPSControls from "./components/FPSControls";
+import CinemaLighting from "./components/CinemaLighting";
 import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 
 interface ThreeSceneProps {
@@ -32,7 +33,6 @@ const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
                     Loading 3D Scene...
                 </div>
             )}
-            {/* Usuwamy przycisk i ukryty element <video> stąd */}
             <Canvas
                 onCreated={() => setIsLoading(false)}
                 style={{ width: "100%", height: "550px" }}
@@ -44,14 +44,12 @@ const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
                 }}
                 dpr={[1, 2]}
             >
-                <ambientLight intensity={0.5} />
-                <directionalLight position={[5, 5, 5]} intensity={1} />
+                <CinemaLighting />
                 <CinemaModel />
                 <VideoScreen videoRef={videoRef} isAudioEnabled={isAudioEnabled} />
                 <AudioSystem videoRef={videoRef} />
                 <FPSControls />
             </Canvas>
-            {/* Przycisk audio jako zwykły przycisk 2D w prawym dolnym rogu */}
             <button
                 onClick={handleToggleAudio}
                 className="absolute bottom-4 right-4 flex items-center justify-center bg-gray-800 bg-opacity-80 rounded-full shadow-lg cursor-pointer hover:bg-opacity-100 transition-all"

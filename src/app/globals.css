@@ -17,7 +17,7 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 .arrow {
   border: solid white;
@@ -25,6 +25,13 @@ body {
   display: inline-block;
   padding: 8px;
   transition: border-color 0.2s ease;
+  position: relative;
+}
+.arrow.left{
+  left:4px
+}
+.arrow.right{
+  right:4px
 }
 
 .right {
