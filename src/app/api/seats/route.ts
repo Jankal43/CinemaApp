@@ -20,6 +20,7 @@ export async function GET(request: NextRequest) {
     const column = searchParams.get('column');
     
     // Build filter object
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: any = {};
     if (status && ['free', 'taken'].includes(status)) {
       filter.status = status;

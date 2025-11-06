@@ -5,36 +5,36 @@ import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
 
 // Komponent glosnika
-const Speaker = ({ position, label }: { position: [number, number, number], label: string }) => {
-    return (
-        <group position={position}>
-            {/* Główny korpus glosnika */}
-            <mesh>
-                <boxGeometry args={[0.3, 0.4, 0.2]} />
-                <meshStandardMaterial color="#2a2a2a" />
-            </mesh>
+// const Speaker = ({ position, label }: { position: [number, number, number], label: string }) => {
+//     return (
+//         <group position={position}>
+//             {/* Główny korpus glosnika */}
+//             <mesh>
+//                 <boxGeometry args={[0.3, 0.4, 0.2]} />
+//                 <meshStandardMaterial color="#2a2a2a" />
+//             </mesh>
             
-            {/* Przód glosnika */}
-            <mesh position={[0, 3, 0.11]}>
-                <cylinderGeometry args={[0.15, 0.15, 0.02, 16]} />
-                <meshStandardMaterial color="#1a1a1a" />
-            </mesh>
+//             {/* Przód glosnika */}
+//             <mesh position={[0, 3, 0.11]}>
+//                 <cylinderGeometry args={[0.15, 0.15, 0.02, 16]} />
+//                 <meshStandardMaterial color="#1a1a1a" />
+//             </mesh>
             
-            {/* Środek glosnika */}
-            <mesh position={[0, 0, 0.12]}>
-                <cylinderGeometry args={[0.05, 0.05, 0.01, 16]} />
-                <meshStandardMaterial color="#333333" />
-            </mesh>
+//             {/* Środek glosnika */}
+//             <mesh position={[0, 0, 0.12]}>
+//                 <cylinderGeometry args={[0.05, 0.05, 0.01, 16]} />
+//                 <meshStandardMaterial color="#333333" />
+//             </mesh>
             
-            {/* Etykieta */}
-            <Html position={[0, -0.3, 0]} center>
-                <div className="text-white text-xs bg-black bg-opacity-70 px-2 py-1 rounded">
-                    {label}
-                </div>
-            </Html>
-        </group>
-    );
-};
+//             {/* Etykieta */}
+//             <Html position={[0, -0.3, 0]} center>
+//                 <div className="text-white text-xs bg-black bg-opacity-70 px-2 py-1 rounded">
+//                     {label}
+//                 </div>
+//             </Html>
+//         </group>
+//     );
+// };
 
 // Komponent wyświetlający ekran ładowania (bez zmian)
 function VideoLoadingFallback() {

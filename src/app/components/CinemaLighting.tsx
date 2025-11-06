@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useEff } from "react";
+import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -25,7 +25,7 @@ const CinemaLighting = () => {
       screenLightRef.current.target.position.set(4.2, -2, 0); // punkt na ekranie
       screenLightRef.current.target.updateMatrixWorld(); // bardzo ważne!
     }
-  }, []);
+  });
   
 
 
@@ -60,7 +60,7 @@ const CinemaLighting = () => {
         castShadow={false}
       />
 
-            {/* Światło od ekranu - delikatny blask ekranu */}
+        
             <pointLight
                 ref={screenGlowRef}
                 position={[3.95, 2, 5]}
@@ -73,13 +73,6 @@ const CinemaLighting = () => {
            
           
 
-            {/* Dodatkowe światło kierunkowe z góry - bardzo delikatne */}
-            {/* <directionalLight
-                position={[3.95, 5, 2.5]}
-                intensity={4.1}
-                color="#2a2a2a"
-                castShadow={false}
-            /> */}
         </>
     );
 };

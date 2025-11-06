@@ -9,12 +9,13 @@ import Seat from '@/models/Seat';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     
-    const reservation = await Reservation.findById(params.id)
+    const { id } = await params;
+    const reservation = await Reservation.findById(id)
       .populate('seatId', 'row column status')
       .populate('movieId', 'title posterUrl trailerUrl audioStereoUrl');
     
@@ -52,12 +53,13 @@ export async function GET(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
     
-    const reservation = await Reservation.findById(params.id);
+    const { id } = await params;
+    const reservation = await Reservation.findById(id);
     
     if (!reservation) {
       return NextResponse.json(

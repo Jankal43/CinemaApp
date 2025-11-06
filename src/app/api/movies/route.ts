@@ -2,15 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/utils/db';
 import Movie from '@/models/Movie';
 
-/**
- * GET /api/movies
- * Returns all movies in the cinema
- * Query parameters:
- * - search: search in title and description
- * - genre: filter by genre
- * - limit: limit number of results
- * - page: page number for pagination
- */
+
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
@@ -23,6 +15,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit;
     
     // Build filter object
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: any = {};
     if (search) {
       filter.$text = { $search: search };
