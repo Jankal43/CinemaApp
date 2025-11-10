@@ -16,7 +16,6 @@ export default function CinemaLayout() {
 
       setTimeout(() => {
         setCurrentScene(newScene);
-        // Zwiększamy klucz przy każdej zmianie sceny, żeby wymusić pełny reset
         setSceneKey((prev) => prev + 1);
         setIsTransitioning(false);
       }, 100);
