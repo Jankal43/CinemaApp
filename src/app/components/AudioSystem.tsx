@@ -12,12 +12,20 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
     const { camera } = useThree();
     const audioListener = useRef<THREE.AudioListener | null>(null);
     const audioSources = useRef<THREE.PositionalAudio[]>([]);
+    const mediaElementSource = useRef<MediaElementAudioSourceNode | null>(null);
     const [isAudioReady, setIsAudioReady] = useState(false);
     const hasCreatedSource = useRef(false);
 
     useEffect(() => {
         if (videoRef.current && !hasCreatedSource.current) {
             const video = videoRef.current;
+            
+            // Sprawdź czy element video już ma połączenie z AudioContext
+            // W React Strict Mode efekt może być wywoływany dwukrotnie
+            if ((video as any).__audioSourceConnected) {
+                console.log("Video element already has audio source connected, skipping...");
+                return;
+            }
             
             // Create audio listener and attach it to the camera
             audioListener.current = new THREE.AudioListener();
@@ -26,7 +34,26 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
             try {
                 // Use the audio context from the listener
                 const audioContext = audioListener.current.context;
-                const source = audioContext.createMediaElementSource(video);
+                
+                // Sprawdź czy element video już ma źródło audio
+                // Jeśli tak, użyj istniejącego zamiast tworzyć nowe
+                let source: MediaElementAudioSourceNode;
+                
+                try {
+                    source = audioContext.createMediaElementSource(video);
+                    // Oznacz element jako połączony
+                    (video as any).__audioSourceConnected = true;
+                    mediaElementSource.current = source;
+                } catch (error: any) {
+                    // Jeśli źródło już istnieje, spróbuj użyć istniejącego
+                    if (error.name === 'InvalidStateError' && error.message.includes('already connected')) {
+                        console.warn("MediaElementSource already exists, reusing...");
+                        // Nie możemy ponownie użyć istniejącego źródła, więc pomiń tworzenie nowego
+                        hasCreatedSource.current = true;
+                        return;
+                    }
+                    throw error;
+                }
                 
               
                 const positions = [
@@ -97,6 +124,21 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
                 // Reset flags
                 hasCreatedSource.current = false;
                 setIsAudioReady(false);
+                
+                // Usuń oznaczenie z elementu video
+                if (videoRef.current) {
+                    delete (videoRef.current as any).__audioSourceConnected;
+                }
+                
+                // Rozłącz źródło audio jeśli istnieje
+                if (mediaElementSource.current) {
+                    try {
+                        mediaElementSource.current.disconnect();
+                    } catch (e) {
+                        // Ignoruj błędy przy rozłączaniu
+                    }
+                    mediaElementSource.current = null;
+                }
             };
         }
     }, [camera, videoRef]);

@@ -13,6 +13,12 @@ export default function Header() {
 
     return (
         <div className="bg-black border-b-2 w-full sticky top-0 flex flex-row-reverse px-12 h-12 z-50">
+            <Link 
+                href="/performance"
+                className="flex items-center justify-between p-4 hover:underline cursor-pointer text-white"
+            >
+                Performance
+            </Link>
             <button 
                 onClick={() => scrollToSection('contact')}
                 className="flex items-center justify-between p-4 pr-12 hover:underline cursor-pointer text-white"
