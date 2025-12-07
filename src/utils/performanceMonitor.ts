@@ -219,7 +219,30 @@ class PerformanceMonitor {
    * Generuje raport sesji wydajności
    */
   generateSessionReport(): PerformanceSession | null {
-    if (this.metrics.length === 0 || !this.hardwareInfo) return null;
+    // Sprawdź czy mamy minimalne wymagania
+    if (this.metrics.length === 0) {
+      console.warn('PerformanceMonitor: No metrics collected');
+      return null;
+    }
+    
+    if (!this.hardwareInfo) {
+      console.warn('PerformanceMonitor: Hardware info not available');
+      // Spróbuj wykryć hardware info jeśli jesteśmy w przeglądarce
+      if (typeof window !== 'undefined') {
+        this.detectHardware();
+        if (!this.hardwareInfo) {
+          // Użyj domyślnych wartości jako fallback
+          this.hardwareInfo = {
+            platform: navigator.platform || 'Unknown',
+            userAgent: navigator.userAgent || 'Unknown',
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            devicePixelRatio: window.devicePixelRatio || 1,
+          };
+        }
+      } else {
+        return null;
+      }
+    }
 
     const fpsValues = this.metrics.map(m => m.fps);
     const frameTimeValues = this.metrics.map(m => m.frameTime);

@@ -145,8 +145,66 @@ class PerformanceBenchmark {
   async runBenchmark(config: BenchmarkConfig): Promise<BenchmarkResult> {
     this.currentConfig = config;
 
+    // Sprawdź czy hardware info jest dostępne
+    let hardwareInfo = this.monitor.getHardwareInfo();
+    if (!hardwareInfo) {
+      // Spróbuj wykryć hardware info ponownie
+      if (typeof window !== 'undefined') {
+        // Wymuś ponowne wykrycie hardware
+        const monitor = this.monitor as any;
+        if (monitor.detectHardware) {
+          monitor.detectHardware();
+        }
+        hardwareInfo = this.monitor.getHardwareInfo();
+      }
+      
+      // Jeśli nadal nie ma, użyj domyślnych wartości
+      if (!hardwareInfo) {
+        hardwareInfo = {
+          platform: typeof navigator !== 'undefined' ? navigator.platform : 'Unknown',
+          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
+          screenResolution: typeof window !== 'undefined' 
+            ? `${window.screen.width}x${window.screen.height}` 
+            : 'Unknown',
+          devicePixelRatio: typeof window !== 'undefined' ? window.devicePixelRatio : 1,
+        };
+      }
+    }
+
+    // Sprawdź czy Canvas/WebGL jest dostępny (wymagane dla benchmarków)
+    if (typeof window !== 'undefined') {
+      const canvas = document.querySelector('canvas');
+      if (!canvas) {
+        throw new Error('Canvas not found. Please navigate to the 3D scene page first and wait for it to load completely.');
+      }
+      
+      // Sprawdź czy WebGL jest dostępny
+      const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
+      if (!gl) {
+        throw new Error('WebGL is not available. Your browser or device may not support WebGL.');
+      }
+    }
+
     // Reset monitora
     this.monitor.reset();
+    
+    // Upewnij się, że hardware info jest ustawione
+    if (!this.monitor.getHardwareInfo() && hardwareInfo) {
+      const monitor = this.monitor as any;
+      monitor.hardwareInfo = hardwareInfo;
+    }
+    
+    // Ustaw kontekst WebGL jeśli dostępny
+    if (typeof window !== 'undefined') {
+      const canvas = document.querySelector('canvas');
+      if (canvas) {
+        const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
+        if (gl) {
+          this.monitor.setGLContext(gl);
+        }
+      }
+    }
+    
     this.monitor.startMonitoring();
 
     // Czekaj na stabilizację (2 sekundy)
@@ -161,7 +219,28 @@ class PerformanceBenchmark {
     // Pobierz wyniki
     const session = this.monitor.generateSessionReport();
     if (!session) {
-      throw new Error('Failed to generate session report');
+      // Sprawdź dlaczego nie udało się wygenerować raportu
+      const metrics = this.monitor.getAllMetrics();
+      const hwInfo = this.monitor.getHardwareInfo();
+      
+      const errorDetails = {
+        metricsCount: metrics.length,
+        hasHardwareInfo: !!hwInfo,
+        isMonitoring: false,
+      };
+      
+      console.error('Failed to generate session report:', errorDetails);
+      
+      // Jeśli nie ma metryk, stwórz minimalny raport
+      if (metrics.length === 0) {
+        throw new Error('No metrics collected during benchmark. Make sure you are on the 3D scene page and the page is fully loaded.');
+      }
+      
+      if (!hwInfo) {
+        throw new Error('Hardware information not available. Please refresh the page and try again.');
+      }
+      
+      throw new Error(`Failed to generate session report: ${JSON.stringify(errorDetails)}`);
     }
 
     // Analizuj wyniki

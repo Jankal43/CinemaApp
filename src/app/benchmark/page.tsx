@@ -45,6 +45,37 @@ export default function BenchmarkPage() {
       return;
     }
 
+    // Sprawdź czy Canvas jest dostępny (wymagane dla benchmarków)
+    if (typeof window !== 'undefined') {
+      const canvas = document.querySelector('canvas');
+      if (!canvas) {
+        setError('Canvas nie został znaleziony. Przejdź do wizualizacji 3D (wybierz film i miejsce), poczekaj aż scena się załaduje, a następnie wróć tutaj i uruchom benchmarki ponownie.');
+        setIsRunning(false);
+        return;
+      }
+      
+      // Sprawdź czy WebGL jest dostępny
+      const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
+      if (!gl) {
+        setError('WebGL nie jest dostępny. Twoja przeglądarka lub urządzenie może nie obsługiwać WebGL. Spróbuj w innej przeglądarce lub urządzeniu.');
+        setIsRunning(false);
+        return;
+      }
+    }
+
+    // Sprawdź czy hardware info jest dostępne
+    const hardwareInfo = monitor.getHardwareInfo();
+    if (!hardwareInfo) {
+      console.warn('Hardware info not available, attempting to detect...');
+      // Spróbuj ponownie wykryć hardware
+      if (typeof window !== 'undefined') {
+        const monitorAny = monitor as any;
+        if (monitorAny.detectHardware) {
+          monitorAny.detectHardware();
+        }
+      }
+    }
+
     setIsRunning(true);
     setError(null);
     setSuite(null);
@@ -334,13 +365,28 @@ export default function BenchmarkPage() {
         <div className="bg-blue-900 bg-opacity-30 border border-blue-700 rounded-lg p-6 mt-8">
           <h3 className="text-lg font-semibold mb-2">Jak używać benchmarków:</h3>
           <ol className="list-decimal list-inside space-y-2 text-sm text-gray-300">
-            <li>Upewnij się, że jesteś na stronie z wizualizacją 3D (scena kinowa)</li>
+            <li><strong>WAŻNE:</strong> Najpierw przejdź do wizualizacji 3D:
+              <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                <li>Wybierz film z listy</li>
+                <li>Wybierz miejsce w sali kinowej</li>
+                <li>Poczekaj aż scena 3D się załaduje</li>
+                <li>Następnie wróć do tej strony (benchmark)</li>
+              </ul>
+            </li>
             <li>Kliknij &quot;Start Benchmark&quot; aby uruchomić automatyczne testy</li>
             <li>Testy będą uruchamiane sekwencyjnie dla różnych konfiguracji jakości</li>
-            <li>Każdy test trwa 30 sekund - nie zamykaj okna przeglądarki</li>
+            <li>Każdy test trwa 30 sekund - <strong>nie zamykaj okna przeglądarki</strong></li>
             <li>Po zakończeniu zobaczysz szczegółowe wyniki i rekomendacje</li>
             <li>Eksportuj wyniki do JSON lub CSV dla analizy w pracy inżynierskiej</li>
           </ol>
+          <div className="mt-4 p-3 bg-yellow-900 bg-opacity-50 border border-yellow-700 rounded text-xs">
+            <strong>Uwaga:</strong> Benchmarki wymagają aktywnej sceny 3D z Canvas. Jeśli widzisz błąd &quot;Failed to generate session report&quot;, upewnij się że:
+            <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
+              <li>Scena 3D jest w pełni załadowana</li>
+              <li>Canvas jest widoczny i renderuje się</li>
+              <li>Przeglądarka obsługuje WebGL</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
