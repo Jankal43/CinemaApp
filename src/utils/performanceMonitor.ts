@@ -54,13 +54,27 @@ class PerformanceMonitor {
 
   constructor() {
     this.sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    this.detectHardware();
+    // Opóźnij wykrywanie sprzętu do momentu gdy jest dostępne środowisko przeglądarki
+    if (typeof window !== 'undefined') {
+      this.detectHardware();
+    }
   }
 
   /**
    * Wykrywa informacje o sprzęcie użytkownika
    */
   private detectHardware(): void {
+    // Sprawdź czy jesteśmy w środowisku przeglądarki
+    if (typeof document === 'undefined' || typeof window === 'undefined' || typeof navigator === 'undefined') {
+      this.hardwareInfo = {
+        platform: 'Unknown',
+        userAgent: 'Unknown',
+        screenResolution: 'Unknown',
+        devicePixelRatio: 1,
+      };
+      return;
+    }
+
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
     
@@ -85,8 +99,8 @@ class PerformanceMonitor {
       userAgent: navigator.userAgent,
       screenResolution: `${window.screen.width}x${window.screen.height}`,
       devicePixelRatio: window.devicePixelRatio,
-      cores: (navigator as any).hardwareConcurrency,
-      memory: (navigator as any).deviceMemory,
+      cores: (navigator as Navigator & { hardwareConcurrency?: number }).hardwareConcurrency,
+      memory: (navigator as Navigator & { deviceMemory?: number }).deviceMemory,
     };
 
     this.hardwareInfo = hardwareInfo;
@@ -149,18 +163,24 @@ class PerformanceMonitor {
 
       // Dodaj informacje o pamięci jeśli dostępne
       if ('memory' in performance) {
-        const memory = (performance as any).memory;
-        metric.memoryUsage = {
-          usedJSHeapSize: memory.usedJSHeapSize,
-          totalJSHeapSize: memory.totalJSHeapSize,
-          jsHeapSizeLimit: memory.jsHeapSizeLimit,
-        };
+        const memory = (performance as Performance & { memory?: {
+          usedJSHeapSize: number;
+          totalJSHeapSize: number;
+          jsHeapSizeLimit: number;
+        }}).memory;
+        if (memory) {
+          metric.memoryUsage = {
+            usedJSHeapSize: memory.usedJSHeapSize,
+            totalJSHeapSize: memory.totalJSHeapSize,
+            jsHeapSizeLimit: memory.jsHeapSizeLimit,
+          };
+        }
       }
 
       // Dodaj informacje o renderowaniu jeśli dostępne
       if (this.gl) {
-        const ext = this.gl.getExtension('WEBGL_debug_renderer_info');
         // Draw calls i triangles wymagają dodatkowych rozszerzeń lub bibliotek
+        this.gl.getExtension('WEBGL_debug_renderer_info');
       }
 
       this.metrics.push(metric);

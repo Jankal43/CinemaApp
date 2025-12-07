@@ -22,7 +22,7 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
             
             // Sprawdź czy element video już ma połączenie z AudioContext
             // W React Strict Mode efekt może być wywoływany dwukrotnie
-            if ((video as any).__audioSourceConnected) {
+            if ((video as HTMLVideoElement & { __audioSourceConnected?: boolean }).__audioSourceConnected) {
                 console.log("Video element already has audio source connected, skipping...");
                 return;
             }
@@ -42,11 +42,11 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
                 try {
                     source = audioContext.createMediaElementSource(video);
                     // Oznacz element jako połączony
-                    (video as any).__audioSourceConnected = true;
+                    (video as HTMLVideoElement & { __audioSourceConnected?: boolean }).__audioSourceConnected = true;
                     mediaElementSource.current = source;
-                } catch (error: any) {
+                } catch (error: unknown) {
                     // Jeśli źródło już istnieje, spróbuj użyć istniejącego
-                    if (error.name === 'InvalidStateError' && error.message.includes('already connected')) {
+                    if (error instanceof Error && error.name === 'InvalidStateError' && error.message.includes('already connected')) {
                         console.warn("MediaElementSource already exists, reusing...");
                         // Nie możemy ponownie użyć istniejącego źródła, więc pomiń tworzenie nowego
                         hasCreatedSource.current = true;
@@ -127,14 +127,14 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
                 
                 // Usuń oznaczenie z elementu video
                 if (videoRef.current) {
-                    delete (videoRef.current as any).__audioSourceConnected;
+                    delete (videoRef.current as HTMLVideoElement & { __audioSourceConnected?: boolean }).__audioSourceConnected;
                 }
                 
                 // Rozłącz źródło audio jeśli istnieje
                 if (mediaElementSource.current) {
                     try {
                         mediaElementSource.current.disconnect();
-                    } catch (e) {
+                    } catch {
                         // Ignoruj błędy przy rozłączaniu
                     }
                     mediaElementSource.current = null;

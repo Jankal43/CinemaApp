@@ -3,16 +3,25 @@
 import { useEffect, useState } from "react";
 import { getPerformanceMonitor, PerformanceMetrics, HardwareInfo } from "@/utils/performanceMonitor";
 
+import { PerformanceSession } from "@/utils/performanceMonitor";
+
 interface PerformanceOverlayProps {
   visible?: boolean;
-  onSave?: (session: any) => void;
+  onSave?: (session: PerformanceSession) => void;
 }
 
 const PerformanceOverlay = ({ visible = true, onSave }: PerformanceOverlayProps) => {
   const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
   const [hardwareInfo, setHardwareInfo] = useState<HardwareInfo | null>(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [sessionStats, setSessionStats] = useState<any>(null);
+  const [sessionStats, setSessionStats] = useState<{
+    averageFPS: number;
+    minFPS: number;
+    maxFPS: number;
+    averageFrameTime: string;
+    duration: string;
+    samples: number;
+  } | null>(null);
   const monitor = getPerformanceMonitor();
 
   useEffect(() => {

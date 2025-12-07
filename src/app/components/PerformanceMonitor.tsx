@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getPerformanceMonitor, PerformanceMetrics } from "@/utils/performanceMonitor";
+import { PerformanceMetrics } from "@/utils/performanceMonitor";
 
 interface PerformanceMonitorProps {
   visible?: boolean;

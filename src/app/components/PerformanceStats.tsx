@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
 import { getPerformanceMonitor, PerformanceMetrics } from "@/utils/performanceMonitor";
 
@@ -29,7 +29,7 @@ const PerformanceStats = ({ enabled, onMetricsUpdate }: PerformanceStatsProps) =
       if (context) {
         monitor.setGLContext(context);
       }
-    } catch (e) {
+    } catch {
       // Ignoruj błąd - kontekst może być już ustawiony
     }
 

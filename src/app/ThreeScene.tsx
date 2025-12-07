@@ -81,7 +81,7 @@ const ThreeScene = ({x,y,z}:ThreeSceneProps) => {
                         if (context) {
                             monitor.setGLContext(context);
                         }
-                    } catch (e) {
+                    } catch {
                         // Ignoruj błąd - kontekst może być już ustawiony
                     }
                 }}

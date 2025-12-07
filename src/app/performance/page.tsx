@@ -238,10 +238,10 @@ export default function PerformancePage() {
           <ol className="list-decimal list-inside space-y-2 text-sm text-gray-300">
             <li>Przejdź do sceny 3D (wybierz film i miejsce)</li>
             <li>Naciśnij klawisz <kbd className="px-2 py-1 bg-gray-700 rounded">P</kbd> aby pokazać monitor wydajności</li>
-            <li>Kliknij "Start Recording" aby rozpocząć pomiar</li>
+            <li>Kliknij &quot;Start Recording&quot; aby rozpocząć pomiar</li>
             <li>Użyj aplikacji normalnie (poruszaj kamerą, oglądaj wideo)</li>
-            <li>Kliknij "Stop Recording" aby zakończyć pomiar</li>
-            <li>Kliknij "Save Report" aby zapisać wyniki</li>
+            <li>Kliknij &quot;Stop Recording&quot; aby zakończyć pomiar</li>
+            <li>Kliknij &quot;Save Report&quot; aby zapisać wyniki</li>
             <li>Odśwież tę stronę aby zobaczyć zapisane statystyki</li>
           </ol>
         </div>
