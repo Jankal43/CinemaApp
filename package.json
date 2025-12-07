@@ -29,7 +29,6 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.56.1",
-    "@react-three/test-renderer": "^9.1.0",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^16.0.0",
     "@testing-library/dom": "^10.4.0",
