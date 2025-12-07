@@ -216,6 +216,22 @@ class PerformanceMonitor {
   }
 
   /**
+   * Wymusza ponowne wykrywanie sprzętu (publiczna metoda)
+   */
+  redetectHardware(): void {
+    if (typeof window !== 'undefined') {
+      this.detectHardware();
+    }
+  }
+
+  /**
+   * Ustawia hardware info (publiczna metoda)
+   */
+  setHardwareInfo(hardwareInfo: HardwareInfo): void {
+    this.hardwareInfo = hardwareInfo;
+  }
+
+  /**
    * Generuje raport sesji wydajności
    */
   generateSessionReport(): PerformanceSession | null {

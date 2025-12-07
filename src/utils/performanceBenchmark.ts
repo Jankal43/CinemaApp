@@ -151,10 +151,7 @@ class PerformanceBenchmark {
       // Spróbuj wykryć hardware info ponownie
       if (typeof window !== 'undefined') {
         // Wymuś ponowne wykrycie hardware
-        const monitor = this.monitor as any;
-        if (monitor.detectHardware) {
-          monitor.detectHardware();
-        }
+        this.monitor.redetectHardware();
         hardwareInfo = this.monitor.getHardwareInfo();
       }
       
@@ -190,8 +187,7 @@ class PerformanceBenchmark {
     
     // Upewnij się, że hardware info jest ustawione
     if (!this.monitor.getHardwareInfo() && hardwareInfo) {
-      const monitor = this.monitor as any;
-      monitor.hardwareInfo = hardwareInfo;
+      this.monitor.setHardwareInfo(hardwareInfo);
     }
     
     // Ustaw kontekst WebGL jeśli dostępny

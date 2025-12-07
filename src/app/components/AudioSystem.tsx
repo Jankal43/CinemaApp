@@ -100,6 +100,9 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
             return () => {
                 console.log("Cleaning up AudioSystem...");
                 
+                // Zapisz referencję do video element przed cleanup (fix dla react-hooks/exhaustive-deps)
+                const videoElement = videoRef.current;
+                
                 // Clean up all audio sources
                 audioSources.current.forEach(source => {
                     try {
@@ -125,9 +128,9 @@ const AudioSystem = ({ videoRef }: AudioSystemProps) => {
                 hasCreatedSource.current = false;
                 setIsAudioReady(false);
                 
-                // Usuń oznaczenie z elementu video
-                if (videoRef.current) {
-                    delete (videoRef.current as HTMLVideoElement & { __audioSourceConnected?: boolean }).__audioSourceConnected;
+                // Usuń oznaczenie z elementu video (używamy zapisanej referencji)
+                if (videoElement) {
+                    delete (videoElement as HTMLVideoElement & { __audioSourceConnected?: boolean }).__audioSourceConnected;
                 }
                 
                 // Rozłącz źródło audio jeśli istnieje

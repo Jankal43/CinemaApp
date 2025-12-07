@@ -64,16 +64,12 @@ export default function BenchmarkPage() {
     }
 
     // Sprawdź czy hardware info jest dostępne
-    const hardwareInfo = monitor.getHardwareInfo();
+    let hardwareInfo = monitor.getHardwareInfo();
     if (!hardwareInfo) {
       console.warn('Hardware info not available, attempting to detect...');
       // Spróbuj ponownie wykryć hardware
-      if (typeof window !== 'undefined') {
-        const monitorAny = monitor as any;
-        if (monitorAny.detectHardware) {
-          monitorAny.detectHardware();
-        }
-      }
+      monitor.redetectHardware();
+      hardwareInfo = monitor.getHardwareInfo();
     }
 
     setIsRunning(true);
